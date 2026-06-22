@@ -397,522 +397,133 @@
   </footer>
 
   <script>
-// Matriz de Perguntas Expandida (15 itens para maior profundidade)
-const translations = {
-    pt: {
-        title: "Big Five Assessment - Pro",
-        subtitle: "Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.",
-        btn: "Gerar Relatório Avançado", resTitle: "Seu Perfil Neurocognitivo", analysis: "Diagnóstico Gemini Pro",
-        labels: ["Abertura", "Conscienciosidade", "Extroversão", "Amabilidade", "Neuroticismo"],
-        opt1: "Discordo", opt2: "Neutro", opt3: "Concordo",
-        q1: "1. Gosto de destrinchar teorias complexas e entender os porquês, mesmo sem aplicação prática imediata.",
-        q2: "2. Sinto forte necessidade de originalidade nas minhas criações e projetos, evitando cópias literais.",
-        q3: "3. Prefiro experimentar variações exóticas e novas abordagens a seguir um padrão testado e seguro.",
-        q4: "4. Mantenho meus arquivos, setups e planos diários meticulosamente estruturados e limpos.",
-        q5: "5. Se estabeleço um objetivo (como uma rotina de treinos ou foco técnico), sigo até o fim com alta autodisciplina.",
-        q6: "6. Antes de tomar uma decisão importante, analiso friamente os recursos disponíveis e descarto o que não serve.",
-        q7: "7. Em ambientes sociais intensos ou lidando muito com o público, sinto minha energia ser drenada rapidamente. (Inversa)",
-        q8: "8. Em discussões ou projetos em grupo, sinto-me confortável em assumir o comando e direcionar o caminho.",
-        q9: "9. Prefiro rotinas dinâmicas e ambientes movimentados a passar longos períodos em silêncio absoluto.",
-        q10: "10. Costumo ceder ou buscar a harmonia em equipe, mesmo que minha ideia inicial fosse ligeiramente diferente.",
-        q11: "11. Priorizo a verdade nua e crua e a eficiência lógica, mesmo que precise ser firme ou cético com as pessoas. (Inversa)",
-        q12: "12. Tendo a acreditar que as pessoas têm boas intenções profissionais até que me provem o contrário.",
-        q13: "13. Diante de imprevistos e caos repentinos, consigo virar a chave rápido sem deixar o estresse mudar meu humor. (Inversa)",
-        q14: "14. Costumo remoer pequenos erros do dia a dia e me cobro excessivamente pela perfeição.",
-        q15: "15. Mudanças abruptas de cenário ou regras no trabalho me geram uma ansiedade perceptível antes de eu agir.",
-        feedback: "Análise Concluída com Sucesso! O seu gráfico de radar reflete um mapeamento de alta fidelidade. Você apresenta um perfil equilibrado entre a exploração cognitiva (Alta Abertura) e a execução estratégica (Conscienciosidade). A sua reatividade ao ambiente é controlada por mecanismos de análise lógica, permitindo uma tomada de decisão fria sob pressão, enquanto seus momentos de introspecção atuam como um ponto crucial de recuperação neural e foco."
-    },
-    en: {
-        title: "Big Five Assessment - Pro",
-        subtitle: "In-depth analysis of your personality structure through 15 scientific sub-factors.",
-        btn: "Generate Advanced Report", resTitle: "Your Neurocognitive Profile", analysis: "Gemini Pro Diagnosis",
-        labels: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"],
-        opt1: "Disagree", opt2: "Neutral", opt3: "Agree",
-        q1: "1. I enjoy dissecting complex theories and understanding the 'why', even without immediate practical use.",
-        q2: "2. I feel a strong need for originality in my creations and projects, avoiding literal copies.",
-        q3: "3. I prefer trying exotic variations and new approaches over following a tested, safe pattern.",
-        q4: "4. I keep my files, setups, and daily plans meticulously structured and clean.",
-        q5: "5. If I set a goal (like a training routine or technical focus), I follow through with high self-discipline.",
-        q6: "6. Before making an important decision, I coldly analyze available resources and discard what doesn't work.",
-        q7: "7. In intense social environments or dealing heavily with the public, I feel my energy drain quickly. (Inverse)",
-        q8: "8. In discussions or group projects, I feel comfortable taking charge and directing the path.",
-        q9: "9. I prefer dynamic routines and bustling environments over spending long periods in absolute silence.",
-        q10: "10. I usually compromise or seek team harmony, even if my initial idea was slightly different.",
-        q11: "11. I prioritize raw truth and logical efficiency, even if I need to be firm or skeptical with people. (Inverse)",
-        q12: "12. I tend to believe that people have good professional intentions until proven otherwise.",
-        q13: "13. In the face of unexpected events and sudden chaos, I can pivot quickly without letting stress change my mood. (Inverse)",
-        q14: "14. I tend to ruminate on small daily mistakes and push myself excessively for perfection.",
-        q15: "15. Abrupt changes in scenarios or rules at work generate noticeable anxiety before I can act.",
-        feedback: "Analysis Successfully Completed! Your radar chart reflects a high-fidelity mapping. You present a balanced profile between cognitive exploration (High Openness) and strategic execution (Conscientiousness). Your reactivity to the environment is controlled by logical analysis mechanisms, allowing cool decision-making under pressure, while your moments of introspection act as a crucial point of neural recovery and focus."
-    }
-};
-
-let currentLang = "pt";
-let userAnswers = Array(15).fill(2);
-
-function renderQuestions() {
-    const container = document.getElementById("questions-container");
-    if (!container) return;
-    container.innerHTML = "";
-    const t = translations[currentLang] || translations["pt"];
-    const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15"];
-    qKeys.forEach((key, index) => {
-        const qCard = document.createElement("div");
-        qCard.className = "question-card";
-        qCard.innerHTML = `
-            <div class="question-text">${t[key]}</div>
-            <div class="options">
-                <button class="btn-option ${userAnswers[index]===1?'selected':''}" onclick="selectOption(${index}, 1)">${t.opt1}</button>
-                <button class="btn-option ${userAnswers[index]===2?'selected':''}" onclick="selectOption(${index}, 2)">
-                    ${t.opt2}</button>
-                <button class="btn-option ${userAnswers[index]===3?'selected':''}" onclick="selectOption(${index}, 3)">
-                    ${t.opt3}</button>
-            </div>`;
-        container.appendChild(qCard);
-    });
-    document.getElementById("txt-title").innerText = t.title;
-    document.getElementById("txt-subtitle").innerText = t.subtitle;
-    document.getElementById("btn-calc").innerText = t.btn;
-    document.getElementById("txt-res-title").innerText = t.resTitle;
-    document.getElementById("txt-analysis").innerText = t.analysis;
-    document.getElementById("txt-feedback-content").innerText = t.feedback;
-}
-function selectOption(qIndex, val) { userAnswers[qIndex] = val; renderQuestions(); }
-function changeLanguage() { currentLang = document.getElementById("lang-select").value; renderQuestions(); }
-function calculateResult() {
-    document.getElementById("quiz-section").style.display = "none";
-    document.getElementById("result-section").style.display = "block";
-    const mapScore = (val) => val === 1 ? 20 : (val === 2 ? 60 : 100);
-    const mapInverse = (val) => val === 1 ? 100 : (val === 2 ? 60 : 20);
-    const openScores = [mapScore(userAnswers[0]), mapScore(userAnswers[1]), mapScore(userAnswers[2])];
-    const scoreO = openScores.reduce((a, b) => a + b, 0) / 3;
-    const consScores = [mapScore(userAnswers[3]), mapScore(userAnswers[4]), mapScore(userAnswers[5])];
-    const scoreC = consScores.reduce((a, b) => a + b, 0) / 3;
-    const extScores = [mapInverse(userAnswers[6]), mapScore(userAnswers[7]), mapScore(userAnswers[8])];
-    const scoreE = extScores.reduce((a, b) => a + b, 0) / 3;
-    const agrScores = [mapScore(userAnswers[9]), mapInverse(userAnswers[10]), mapScore(userAnswers[11])];
-    const scoreA = agrScores.reduce((a, b) => a + b, 0) / 3;
-    const neuScores = [mapInverse(userAnswers[12]), mapScore(userAnswers[13]), mapScore(userAnswers[14])];
-    const scoreN = neuScores.reduce((a, b) => a + b, 0) / 3;
-    const ctx = document.getElementById("radarChart").getContext("2d");
-    const t = translations[currentLang] || translations["pt"];
-    new Chart(ctx, {
-        type: "radar",
-        data: {
-            labels: t.labels,
-            datasets: [{
-                label: "Espectro FFM",
-                data: [scoreO, scoreC, scoreE, scoreA, scoreN],
-                backgroundColor: "rgba(99, 102, 241, 0.15)",
-                borderColor: "rgba(99, 102, 241, 1)",
-                borderWidth: 3,
-                pointBackgroundColor: "rgba(99, 102, 241, 1)",
-                pointRadius: 4
-            }]
+    // Matriz de Perguntas Expandida (15 itens para maior profundidade)
+    const translations = {
+        pt: {
+            title: "Big Five Assessment - Pro",
+            subtitle: "Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.",
+            btn: "Gerar Relatório Avançado", resTitle: "Seu Perfil Neurocognitivo", analysis: "Diagnóstico Gemini Pro",
+            labels: ["Abertura", "Conscienciosidade", "Extroversão", "Amabilidade", "Neuroticismo"],
+            opt1: "Discordo", opt2: "Neutro", opt3: "Concordo",
+            q1: "1. Gosto de destrinchar teorias complexas e entender os porquês, mesmo sem aplicação prática imediata.",
+            q2: "2. Sinto forte necessidade de originalidade nas minhas criações e projetos, evitando cópias literais.",
+            q3: "3. Prefiro experimentar variações exóticas e novas abordagens a seguir um padrão testado e seguro.",
+            q4: "4. Mantenho meus arquivos, setups e planos diários meticulosamente estruturados e limpos.",
+            q5: "5. Se estabeleço um objetivo (como uma rotina de treinos ou foco técnico), sigo até o fim com alta autodisciplina.",
+            q6: "6. Antes de tomar uma decisão importante, analiso friamente os recursos disponíveis e descarto o que não serve.",
+            q7: "7. Em ambientes sociais intensos ou lidando muito com o público, sinto minha energia ser drenada rapidamente. (Inversa)",
+            q8: "8. Em discussões ou projetos em grupo, sinto-me confortável em assumir o comando e direcionar o caminho.",
+            q9: "9. Prefiro rotinas dinâmicas e ambientes movimentados a passar longos períodos em silêncio absoluto.",
+            q10: "10. Costumo ceder ou buscar a harmonia em equipe, mesmo que minha ideia inicial fosse ligeiramente diferente.",
+            q11: "11. Priorizo a verdade nua e crua e a eficiência lógica, mesmo que precise ser firme ou cético com as pessoas. (Inversa)",
+            q12: "12. Tendo a acreditar que as pessoas têm boas intenções profissionais até que me provem o contrário.",
+            q13: "13. Diante de imprevistos e caos repentinos, consigo virar a chave rápido sem deixar o estresse mudar meu humor. (Inversa)",
+            q14: "14. Costumo remoer pequenos erros do dia a dia e me cobro excessivamente pela perfeição.",
+            q15: "15. Mudanças abruptas de cenário ou regras no trabalho me geram uma ansiedade perceptível antes de eu agir.",
+            feedback: "Análise Concluída com Sucesso! O seu gráfico de radar reflete um mapeamento de alta fidelidade. Você apresenta um perfil equilibrado entre a exploração cognitiva (Alta Abertura) e a execução estratégica (Conscienciosidade). A sua reatividade ao ambiente é controlada por mecanismos de análise lógica, permitindo uma tomada de decisão fria sob pressão, enquanto seus momentos de introspecção atuam como um ponto crucial de recuperação neural e foco."
         },
-        options: {
-            scales: {
-                r: {
-                    angleLines: { display: true, color: "#e2e8f0" },
-                    grid: { color: "#e2e8f0" },
-                    pointLabels: { font: { size: 14, weight: "bold", family: "Plus Jakarta Sans" }, color: "#1e293b" },
-                    suggestedMin: 0, suggestedMax: 100, ticks: { display: false }
-                }
-            },
-            plugins: { legend: { display: false } }
+        en: {
+            title: "Big Five Assessment - Pro",
+            subtitle: "In-depth analysis of your personality structure through 15 scientific sub-factors.",
+            btn: "Generate Advanced Report", resTitle: "Your Neurocognitive Profile", analysis: "Gemini Pro Diagnosis",
+            labels: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"],
+            opt1: "Disagree", opt2: "Neutral", opt3: "Agree",
+            q1: "1. I enjoy dissecting complex theories and understanding the 'why', even without immediate practical use.",
+            q2: "2. I feel a strong need for originality in my creations and projects, avoiding literal copies.",
+            q3: "3. I prefer trying exotic variations and new approaches over following a tested, safe pattern.",
+            q4: "4. I keep my files, setups, and daily plans meticulously structured and clean.",
+            q5: "5. If I set a goal (like a training routine or technical focus), I follow through with high self-discipline.",
+            q6: "6. Before making an important decision, I coldly analyze available resources and discard what doesn't work.",
+            q7: "7. In intense social environments or dealing heavily with the public, I feel my energy drain quickly. (Inverse)",
+            q8: "8. In discussions or group projects, I feel comfortable taking charge and directing the path.",
+            q9: "9. I prefer dynamic routines and bustling environments over spending long periods in absolute silence.",
+            q10: "10. I usually compromise or seek team harmony, even if my initial idea was slightly different.",
+            q11: "11. I prioritize raw truth and logical efficiency, even if I need to be firm or skeptical with people. (Inverse)",
+            q12: "12. I tend to believe that people have good professional intentions until proven otherwise.",
+            q13: "13. In the face of unexpected events and sudden chaos, I can pivot quickly without letting stress change my mood. (Inverse)",
+            q14: "14. I tend to ruminate on small daily mistakes and push myself excessively for perfection.",
+            q15: "15. Abrupt changes in scenarios or rules at work generate noticeable anxiety before I can act.",
+            feedback: "Analysis Successfully Completed! Your radar chart reflects a high-fidelity mapping. You present a balanced profile between cognitive exploration (High Openness) and strategic execution (Conscientiousness). Your reactivity to the environment is controlled by logical analysis mechanisms, allowing cool decision-making under pressure, while your moments of introspection act as a crucial point of neural recovery and focus."
         }
-    });
-}
-window.onload = function() { renderQuestions(); };
-  </script>
-  
-  <style>
-    /* Reset and Core Styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    };
 
-    body {
-      background-color: #0f172a;
-      background-image: 
-        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-        radial-gradient(at 50% 0%, hsla(225,39%,20%,0.25) 0, transparent 50%),
-        radial-gradient(at 100% 0%, hsla(263,45%,15%,0.15) 0, transparent 50%);
-      color: #f8fafc;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      overflow-x: hidden;
-      position: relative;
-    }
+    let currentLang = "pt";
+    let userAnswers = Array(15).fill(2);
 
-    .bg-glow {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -10;
-      pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.06) 0%, rgba(15, 23, 42, 0) 65%);
+    function renderQuestions() {
+        const container = document.getElementById("questions-container");
+        if (!container) return;
+        container.innerHTML = "";
+        const t = translations[currentLang] || translations["pt"];
+        const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15"];
+        qKeys.forEach((key, index) => {
+            const qCard = document.createElement("div");
+            qCard.className = "question-card";
+            qCard.innerHTML = `
+                <div class="question-text">${t[key]}</div>
+                <div class="options">
+                    <button class="btn-option ${userAnswers[index]===1?'selected':''}" onclick="selectOption(${index}, 1)">${t.opt1}</button>
+                    <button class="btn-option ${userAnswers[index]===2?'selected':''}" onclick="selectOption(${index}, 2)">
+                        ${t.opt2}</button>
+                    <button class="btn-option ${userAnswers[index]===3?'selected':''}" onclick="selectOption(${index}, 3)">
+                        ${t.opt3}</button>
+                </div>`;
+            container.appendChild(qCard);
+        });
+        document.getElementById("txt-title").innerText = t.title;
+        document.getElementById("txt-subtitle").innerText = t.subtitle;
+        document.getElementById("btn-calc").innerText = t.btn;
+        document.getElementById("txt-res-title").innerText = t.resTitle;
+        document.getElementById("txt-analysis").innerText = t.analysis;
+        document.getElementById("txt-feedback-content").innerText = t.feedback;
     }
-
-    /* Webkit scrollbars styling */
-    ::-webkit-scrollbar {
-      width: 8px;
+    function selectOption(qIndex, val) { userAnswers[qIndex] = val; renderQuestions(); }
+    function changeLanguage() { currentLang = document.getElementById("lang-select").value; renderQuestions(); }
+    function calculateResult() {
+        document.getElementById("quiz-section").style.display = "none";
+        document.getElementById("result-section").style.display = "block";
+        const mapScore = (val) => val === 1 ? 20 : (val === 2 ? 60 : 100);
+        const mapInverse = (val) => val === 1 ? 100 : (val === 2 ? 60 : 20);
+        const openScores = [mapScore(userAnswers[0]), mapScore(userAnswers[1]), mapScore(userAnswers[2])];
+        const scoreO = openScores.reduce((a, b) => a + b, 0) / 3;
+        const consScores = [mapScore(userAnswers[3]), mapScore(userAnswers[4]), mapScore(userAnswers[5])];
+        const scoreC = consScores.reduce((a, b) => a + b, 0) / 3;
+        const extScores = [mapInverse(userAnswers[6]), mapScore(userAnswers[7]), mapScore(userAnswers[8])];
+        const scoreE = extScores.reduce((a, b) => a + b, 0) / 3;
+        const agrScores = [mapScore(userAnswers[9]), mapInverse(userAnswers[10]), mapScore(userAnswers[11])];
+        const scoreA = agrScores.reduce((a, b) => a + b, 0) / 3;
+        const neuScores = [mapInverse(userAnswers[12]), mapScore(userAnswers[13]), mapScore(userAnswers[14])];
+        const scoreN = neuScores.reduce((a, b) => a + b, 0) / 3;
+        const ctx = document.getElementById("radarChart").getContext("2d");
+        const t = translations[currentLang] || translations["pt"];
+        new Chart(ctx, {
+            type: "radar",
+            data: {
+                labels: t.labels,
+                datasets: [{
+                    label: "Espectro FFM",
+                    data: [scoreO, scoreC, scoreE, scoreA, scoreN],
+                    backgroundColor: "rgba(99, 102, 241, 0.15)",
+                    borderColor: "rgba(99, 102, 241, 1)",
+                    borderWidth: 3,
+                    pointBackgroundColor: "rgba(99, 102, 241, 1)",
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { display: true, color: "#e2e8f0" },
+                        grid: { color: "#e2e8f0" },
+                        pointLabels: { font: { size: 14, weight: "bold", family: "Plus Jakarta Sans" }, color: "#1e293b" },
+                        suggestedMin: 0, suggestedMax: 100, ticks: { display: false }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
     }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 99px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
-    }
-
-    /* Header & Branding */
-    .quiz-header {
-      width: 100%;
-      max-width: 680px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      animation: fadeIn 0.6s ease forwards;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-dot {
-      width: 10px;
-      height: 10px;
-      background: #6366f1;
-      border-radius: 50%;
-      box-shadow: 0 0 12px #6366f1;
-    }
-
-    .brand-name {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: #ffffff;
-      text-transform: uppercase;
-    }
-
-    .lang-select {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.3s ease;
-    }
-
-    .lang-select:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    .lang-select option {
-      background: #0f172a;
-      color: #ffffff;
-      font-weight: normal;
-    }
-
-    /* Main Container Card */
-    .card {
-      background: #ffffff;
-      color: #1e293b;
-      border-radius: 24px;
-      padding: 48px;
-      width: 100%;
-      max-width: 680px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .title {
-      font-size: 28px;
-      font-weight: 800;
-      color: #0f172a;
-      text-align: center;
-      margin-bottom: 12px;
-      letter-spacing: -0.02em;
-    }
-
-    .subtitle {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #475569;
-      text-align: center;
-      margin-bottom: 32px;
-      max-width: 480px;
-      align-self: center;
-    }
-
-    /* Scrollable Question Area */
-    .questions-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-height: 52vh;
-      overflow-y: auto;
-      padding-right: 12px;
-      margin-bottom: 24px;
-    }
-
-    .question-card {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      transition: all 0.25s ease;
-    }
-
-    .question-card:hover {
-      border-color: #cbd5e1;
-      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.05);
-      background: #ffffff;
-    }
-
-    .question-text {
-      font-size: 15px;
-      font-weight: 700;
-      color: #0f172a;
-      line-height: 1.5;
-    }
-
-    /* Form Option Buttons */
-    .options {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .btn-option {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      color: #64748b;
-      padding: 12px 8px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      text-align: center;
-      outline: none;
-    }
-
-    .btn-option:hover {
-      background: #f1f5f9;
-      color: #334155;
-      border-color: #cbd5e1;
-    }
-
-    .btn-option.selected {
-      background: #6366f1;
-      color: #ffffff;
-      border-color: #6366f1;
-      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
-    }
-
-    /* Submit / Rebuild Buttons */
-    .btn-calculate {
-      background: #6366f1;
-      color: #ffffff;
-      border: none;
-      padding: 16px 32px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      margin-top: 12px;
-      outline: none;
-    }
-
-    .btn-calculate:hover {
-      background: #4f46e5;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
-    }
-
-    .btn-calculate:active {
-      transform: translateY(0);
-    }
-
-    /* Results layout */
-    .chart-wrapper {
-      position: relative;
-      width: 100%;
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 12px 0 28px;
-    }
-
-    .analysis-container {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      padding: 24px;
-      width: 100%;
-    }
-
-    .analysis-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .analysis-text {
-      font-size: 14px;
-      color: #334155;
-      line-height: 1.6;
-    }
-
-    .quiz-footer {
-      margin-top: 32px;
-      text-align: center;
-      font-size: 13px;
-      color: #64748b;
-      max-width: 680px;
-      animation: fadeIn 0.6s ease forwards;
-    }
-
-    /* Responsiveness adjustments */
-    @media (max-width: 640px) {
-      html {
-        font-size: 14px;
-      }
-      .card {
-        padding: 32px 20px;
-        border-radius: 20px;
-      }
-      .title {
-        font-size: 24px;
-      }
-      .questions-list {
-        max-height: 45vh;
-        padding-right: 6px;
-      }
-      .question-card {
-        padding: 16px;
-      }
-      .btn-option {
-        padding: 10px 4px;
-        font-size: 12px;
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="bg-glow"></div>
-  
-  <header class="quiz-header">
-    <div class="brand">
-      <span class="brand-dot"></span>
-      <span class="brand-name">Anima</span>
-    </div>
-    <select id="lang-select" class="lang-select" onchange="changeLanguage()">
-      <option value="pt">PT</option>
-      <option value="en">EN</option>
-    </select>
-  </header>
-
-  <!-- QUIZ SECTION -->
-  <main id="quiz-section" class="card">
-    <h1 id="txt-title" class="title">Big Five Assessment - Pro</h1>
-    <p id="txt-subtitle" class="subtitle">Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.</p>
-    
-    <div id="questions-container" class="questions-list">
-      <!-- Dynamic list of questions -->
-    </div>
-    
-    <button id="btn-calc" class="btn-calculate" onclick="calculateResult()">
-      Gerar Relatório Avançado
-    </button>
-  </main>
-
-  <!-- RESULT SECTION -->
-  <main id="result-section" class="card" style="display: none;">
-    <h1 id="txt-res-title" class="title">Seu Perfil Neurocognitivo</h1>
-    
-    <div class="chart-wrapper">
-      <canvas id="radarChart"></canvas>
-    </div>
-    
-    <div class="analysis-container">
-      <h3 class="analysis-title">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: #6366f1;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548 .547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-        <span id="txt-analysis">Diagnóstico Gemini Pro</span>
-      </h3>
-      <div id="txt-feedback-content" class="analysis-text">
-        <!-- Feedback content goes here -->
-      </div>
-    </div>
-    
-    <button class="btn-calculate" style="margin-top: 24px;" onclick="location.reload()">
-      Refazer Teste
-    </button>
-  </main>
-
-  <footer class="quiz-footer">
-    <p>© 2026 Anima. Baseado no modelo científico Big Five de personalidade.</p>
-  </footer>
-
-  <script>
-    // This script block will be completely replaced by the update_test.sh execution
+    window.onload = function() { renderQuestions(); };
   </script>
 </body>
 </html>
