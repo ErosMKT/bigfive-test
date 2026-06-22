@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anima | Teste de Personalidade Big Five</title>
+  <title>Anima | Big Five Assessment Pro</title>
   <!-- Plus Jakarta Sans via Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
-    /* CSS Reset & Variable Definitions */
+    /* Reset and Core Styles */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -37,7 +37,6 @@
       position: relative;
     }
 
-    /* Background glow effect */
     .bg-glow {
       position: fixed;
       top: 0;
@@ -64,7 +63,7 @@
       background: #334155;
     }
 
-    /* Header & Logo styling */
+    /* Header & Branding */
     .quiz-header {
       width: 100%;
       max-width: 680px;
@@ -97,7 +96,6 @@
       text-transform: uppercase;
     }
 
-    /* Language dropdown styling */
     .lang-select {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(12px);
@@ -124,7 +122,7 @@
       font-weight: normal;
     }
 
-    /* Main Floating Card styling */
+    /* Main Container Card */
     .card {
       background: #ffffff;
       color: #1e293b;
@@ -138,102 +136,103 @@
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-    }
-
-    /* Screens setup */
-    .screen {
-      display: none;
-      opacity: 0;
-      flex-direction: column;
-      width: 100%;
-    }
-
-    .screen.active {
-      display: flex;
       animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Welcome Graphic styling */
-    .welcome-graphic {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      margin: 0 auto 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .glow-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(28px);
-      opacity: 0.5;
-      animation: floatOrb 8s ease-in-out infinite;
-    }
-
-    .orb-1 {
-      width: 110px;
-      height: 110px;
-      background: #6366f1;
-      left: 10px;
-      top: 10px;
-    }
-
-    .orb-2 {
-      width: 100px;
-      height: 100px;
-      background: #a855f7;
-      right: 10px;
-      bottom: 10px;
-      animation-delay: 4s;
-    }
-
-    .graphic-icon {
-      position: relative;
-      z-index: 10;
-      width: 68px;
-      height: 68px;
-      background: #ffffff;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 12px 24px -10px rgba(99, 102, 241, 0.3);
-      border: 1px solid rgba(99, 102, 241, 0.1);
-    }
-
-    .graphic-icon svg {
-      width: 32px;
-      height: 32px;
-      stroke: #6366f1;
-    }
-
-    /* Welcome Screen Text & Button */
     .title {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       color: #0f172a;
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       letter-spacing: -0.02em;
     }
 
     .subtitle {
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.6;
       color: #475569;
       text-align: center;
-      margin-bottom: 36px;
+      margin-bottom: 32px;
       max-width: 480px;
       align-self: center;
     }
 
-    .btn-primary {
+    /* Scrollable Question Area */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding-right: 12px;
+      margin-bottom: 24px;
+    }
+
+    .question-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .question-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.05);
+      background: #ffffff;
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.5;
+    }
+
+    /* Form Option Buttons */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .btn-option {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      padding: 12px 8px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+      outline: none;
+    }
+
+    .btn-option:hover {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .btn-option.selected {
+      background: #6366f1;
+      color: #ffffff;
+      border-color: #6366f1;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Submit / Rebuild Buttons */
+    .btn-calculate {
       background: #6366f1;
       color: #ffffff;
       border: none;
-      padding: 14px 28px;
+      padding: 16px 32px;
       border-radius: 14px;
       font-size: 16px;
       font-weight: 700;
@@ -244,256 +243,45 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      align-self: center;
+      width: 100%;
+      margin-top: 12px;
+      outline: none;
     }
 
-    .btn-primary:hover {
+    .btn-calculate:hover {
       background: #4f46e5;
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
     }
 
-    .btn-primary:active {
+    .btn-calculate:active {
       transform: translateY(0);
     }
 
-    /* Progress bar */
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background: #f1f5f9;
-      border-radius: 999px;
-      margin-bottom: 28px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: #6366f1;
-      width: 0%;
-      border-radius: 999px;
-      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .question-header-text {
-      font-size: 13px;
-      font-weight: 700;
-      color: #6366f1;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .question-text {
-      font-size: 22px;
-      font-weight: 700;
-      color: #0f172a;
-      line-height: 1.5;
-      text-align: center;
-      margin-bottom: 36px;
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Option choices styling */
-    .options-container {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      width: 100%;
-    }
-
-    @media (min-width: 640px) {
-      .options-container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    .option-btn {
-      background: #ffffff;
-      border: 2px solid #e2e8f0;
-      color: #475569;
-      padding: 24px 16px;
-      border-radius: 18px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .option-icon {
-      width: 24px;
-      height: 24px;
-      stroke: #94a3b8;
-      transition: all 0.25s ease;
-    }
-
-    .option-btn.disagree:hover {
-      border-color: #f43f5e;
-      background: #fff1f2;
-      color: #e11d48;
-    }
-    .option-btn.disagree:hover .option-icon {
-      stroke: #e11d48;
-      transform: scale(1.15);
-    }
-
-    .option-btn.neutral:hover {
-      border-color: #64748b;
-      background: #f8fafc;
-      color: #334155;
-    }
-    .option-btn.neutral:hover .option-icon {
-      stroke: #475569;
-      transform: scale(1.15);
-    }
-
-    .option-btn.agree:hover {
-      border-color: #6366f1;
-      background: #e0e7ff;
-      color: #4f46e5;
-    }
-    .option-btn.agree:hover .option-icon {
-      stroke: #4f46e5;
-      transform: scale(1.15);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: #94a3b8;
-      border: 1px solid #e2e8f0;
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 28px;
-      align-self: center;
-    }
-
-    .btn-secondary:hover {
-      color: #475569;
-      border-color: #cbd5e1;
-      background: #f8fafc;
-    }
-
-    /* Loading Spinner styling */
-    .pulse-ring {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: 4px solid #6366f1;
-      border-top-color: transparent;
-      animation: spin 1s linear infinite;
-      margin: 24px auto 16px;
-    }
-
-    .loading-text {
-      font-size: 18px;
-      font-weight: 700;
-      color: #0f172a;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
     /* Results layout */
-    .results-title {
-      font-size: 28px;
-      font-weight: 800;
-      color: #0f172a;
-      text-align: center;
-      margin-bottom: 12px;
-      letter-spacing: -0.02em;
-    }
-
-    .results-intro {
-      font-size: 15px;
-      line-height: 1.6;
-      color: #475569;
-      text-align: center;
-      margin-bottom: 32px;
-      max-width: 560px;
-      align-self: center;
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 32px;
-      width: 100%;
-    }
-
-    @media (min-width: 768px) {
-      .results-grid {
-        grid-template-columns: 1fr 1.2fr;
-        align-items: start;
-      }
-    }
-
     .chart-wrapper {
       position: relative;
       width: 100%;
-      height: 280px;
+      height: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: 12px 0 28px;
     }
 
-    .archetype-container {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 20px;
-    }
-
-    .archetype-badge {
-      display: inline-flex;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: #6366f1;
-      margin-bottom: 8px;
-    }
-
-    .archetype-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #0f172a;
-      margin-bottom: 6px;
-    }
-
-    .archetype-summary {
-      font-size: 14px;
-      line-height: 1.5;
-      color: #475569;
-      font-style: italic;
-    }
-
-    /* Empathetic analysis display card */
     .analysis-container {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 18px;
       padding: 24px;
+      width: 100%;
     }
 
     .analysis-title {
       font-size: 16px;
       font-weight: 700;
       color: #0f172a;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -505,14 +293,6 @@
       line-height: 1.6;
     }
 
-    .analysis-paragraph {
-      margin-bottom: 12px;
-    }
-
-    .analysis-paragraph:last-child {
-      margin-bottom: 0;
-    }
-
     .quiz-footer {
       margin-top: 32px;
       text-align: center;
@@ -522,7 +302,7 @@
       animation: fadeIn 0.6s ease forwards;
     }
 
-    /* Layout Responsive Tweaks */
+    /* Responsiveness adjustments */
     @media (max-width: 640px) {
       html {
         font-size: 14px;
@@ -532,31 +312,21 @@
         border-radius: 20px;
       }
       .title {
-        font-size: 26px;
-      }
-      .question-text {
-        font-size: 18px;
-        margin-bottom: 24px;
-      }
-      .welcome-graphic {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 24px;
-      }
-      .graphic-icon {
-        width: 56px;
-        height: 56px;
-      }
-      .graphic-icon svg {
-        width: 28px;
-        height: 28px;
-      }
-      .results-title {
         font-size: 24px;
+      }
+      .questions-list {
+        max-height: 45vh;
+        padding-right: 6px;
+      }
+      .question-card {
+        padding: 16px;
+      }
+      .btn-option {
+        padding: 10px 4px;
+        font-size: 12px;
       }
     }
 
-    /* Keyframe Animations */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -566,22 +336,6 @@
         opacity: 1;
         transform: translateY(0);
       }
-    }
-
-    @keyframes floatOrb {
-      0%, 100% {
-        transform: translate(0, 0) scale(1);
-      }
-      33% {
-        transform: translate(10px, -15px) scale(1.05);
-      }
-      66% {
-        transform: translate(-10px, 10px) scale(0.95);
-      }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -593,653 +347,572 @@
       <span class="brand-dot"></span>
       <span class="brand-name">Anima</span>
     </div>
-    <select id="lang-select" class="lang-select">
+    <select id="lang-select" class="lang-select" onchange="changeLanguage()">
       <option value="pt">PT</option>
       <option value="en">EN</option>
-      <option value="es">ES</option>
-      <option value="it">IT</option>
     </select>
   </header>
 
-  <main class="card">
-    <!-- WELCOME SCREEN -->
-    <div id="screen-welcome" class="screen active">
-      <div class="welcome-graphic">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="graphic-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21m0 0l-.813-5.096M9 21h3m-3.07-12.772a9.75 9.75 0 11-2.24 5.066M19.5 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </div>
-      </div>
-      <h1 data-i18n="welcomeTitle" class="title">Descubra sua Mente</h1>
-      <p data-i18n="welcomeSub" class="subtitle">Explore sua personalidade através do modelo científico Big Five. Uma análise rápida, profunda e acolhedora em apenas 5 perguntas situacionais.</p>
-      <button data-i18n="startButton" class="btn-primary" onclick="startQuiz()">
-        Iniciar Teste
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-        </svg>
-      </button>
+  <!-- QUIZ SECTION -->
+  <main id="quiz-section" class="card">
+    <h1 id="txt-title" class="title">Big Five Assessment - Pro</h1>
+    <p id="txt-subtitle" class="subtitle">Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.</p>
+    
+    <div id="questions-container" class="questions-list">
+      <!-- Dynamic list of questions -->
     </div>
+    
+    <button id="btn-calc" class="btn-calculate" onclick="calculateResult()">
+      Gerar Relatório Avançado
+    </button>
+  </main>
 
-    <!-- QUESTION SCREEN -->
-    <div id="screen-question" class="screen">
-      <div class="progress-container">
-        <div id="progress-bar" class="progress-bar"></div>
-      </div>
-      <span id="question-header" class="question-header-text">Pergunta 1 de 5</span>
-      <h2 id="question-text" class="question-text"></h2>
-      
-      <div class="options-container">
-        <button class="option-btn disagree" onclick="selectAnswer(20)">
-          <svg class="option-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          <span data-i18n="disagree">Discordo</span>
-        </button>
-        <button class="option-btn neutral" onclick="selectAnswer(50)">
-          <svg class="option-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
-          </svg>
-          <span data-i18n="neutral">Neutro</span>
-        </button>
-        <button class="option-btn agree" onclick="selectAnswer(85)">
-          <svg class="option-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <span data-i18n="agree">Concordo</span>
-        </button>
-      </div>
-      
-      <button class="btn-secondary" onclick="goBack()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  <!-- RESULT SECTION -->
+  <main id="result-section" class="card" style="display: none;">
+    <h1 id="txt-res-title" class="title">Seu Perfil Neurocognitivo</h1>
+    
+    <div class="chart-wrapper">
+      <canvas id="radarChart"></canvas>
+    </div>
+    
+    <div class="analysis-container">
+      <h3 class="analysis-title">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: #6366f1;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548 .547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
-        <span data-i18n="backBtn">Voltar</span>
-      </button>
-    </div>
-
-    <!-- LOADING SCREEN -->
-    <div id="screen-loading" class="screen">
-      <div class="pulse-ring"></div>
-      <h2 data-i18n="calculating" class="loading-text">Mapeando suas respostas...</h2>
-    </div>
-
-    <!-- RESULTS SCREEN -->
-    <div id="screen-results" class="screen">
-      <h1 data-i18n="resultsTitle" class="results-title">Seu Perfil de Personalidade</h1>
-      <p data-i18n="resultsIntro" class="results-intro">Com base nas suas respostas, veja abaixo a intensidade de cada pilar da sua personalidade e uma análise detalhada sobre o seu estilo de ser.</p>
-      
-      <div class="results-grid">
-        <div class="results-left">
-          <div class="chart-wrapper">
-            <canvas id="radarChart"></canvas>
-          </div>
-        </div>
-        <div class="results-right">
-          <div class="archetype-container">
-            <span class="archetype-badge" data-i18n="archetypeTitle">Seu Arquétipo Predominante:</span>
-            <h2 id="archetype-title" class="archetype-title">O Explorador Mental</h2>
-            <p id="archetype-summary" class="archetype-summary">Guiado pela imaginação...</p>
-          </div>
-          
-          <div class="analysis-container">
-            <h3 class="analysis-title">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: #6366f1;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548 .547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <span data-i18n="empatheticTitle">Análise Empática & Conselhos</span>
-            </h3>
-            <div id="analysis-text" class="analysis-text">
-              <!-- Dynamically generated paragraphs -->
-            </div>
-          </div>
-        </div>
+        <span id="txt-analysis">Diagnóstico Gemini Pro</span>
+      </h3>
+      <div id="txt-feedback-content" class="analysis-text">
+        <!-- Feedback content goes here -->
       </div>
-      
-      <button class="btn-primary" style="margin-top: 32px; align-self: center;" onclick="resetQuiz()">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" />
-        </svg>
-        <span data-i18n="restartBtn">Refazer Teste</span>
-      </button>
     </div>
+    
+    <button class="btn-calculate" style="margin-top: 24px;" onclick="location.reload()">
+      Refazer Teste
+    </button>
   </main>
 
   <footer class="quiz-footer">
-    <p id="footer-text" data-i18n="footerText">© 2026 Anima. Baseado no modelo científico Big Five de personalidade.</p>
+    <p>© 2026 Anima. Baseado no modelo científico Big Five de personalidade.</p>
   </footer>
 
   <script>
-    /* i18n Translations Dictionary */
-    const translations = {
-      pt: {
-        welcomeTitle: "Descubra sua Mente",
-        welcomeSub: "Explore sua personalidade através do modelo científico Big Five. Uma análise rápida, profunda e acolhedora em apenas 5 perguntas situacionais.",
-        startButton: "Iniciar Teste",
-        questionOf: "Pergunta {current} de {total}",
-        disagree: "Discordo",
-        neutral: "Neutro",
-        agree: "Concordo",
-        calculating: "Mapeando suas respostas...",
-        resultsTitle: "Seu Perfil de Personalidade",
-        resultsIntro: "Com base nas suas respostas, veja abaixo a intensidade de cada pilar da sua personalidade e uma análise detalhada sobre o seu estilo de ser.",
-        archetypeTitle: "Seu Arquétipo Predominante:",
-        empatheticTitle: "Análise Empática & Conselhos de Desenvolvimento",
-        restartBtn: "Refazer Teste",
-        backBtn: "Voltar",
-        radarChartLabel: "Pilar de Personalidade",
-        footerText: "© 2026 Anima. Baseado no modelo científico Big Five de personalidade.",
-        // Trait names for the chart
-        trait0: "Sensibilidade Emocional",
-        trait1: "Extroversão",
-        trait2: "Abertura à Experiência",
-        trait3: "Conscienciosidade",
-        trait4: "Amabilidade",
-        // Question Texts
-        q1: "Quando surgem imprevistos graves na minha rotina, sinto-me facilmente ansioso ou preocupado com os resultados.",
-        q2: "Depois de uma semana exaustiva, a melhor maneira de recarregar minhas baterias é saindo com amigos ou em eventos sociais.",
-        q3: "Prefiro me aventurar por novas teorias, ideias abstratas ou locais exóticos do que seguir hábitos já conhecidos e seguros.",
-        q4: "Mantenho meus espaços e tarefas extremamente organizados e estruturados, planejando minhas ações passo a passo.",
-        q5: "Priorizo manter um clima amigável e pacífico nas discussões, mesmo que precise ceder ou não provar que estou certo."
-      },
-      en: {
-        welcomeTitle: "Discover Your Mind",
-        welcomeSub: "Explore your personality through the scientific Big Five model. A quick, deep, and welcoming analysis in just 5 situational questions.",
-        startButton: "Start Test",
-        questionOf: "Question {current} of {total}",
-        disagree: "Disagree",
-        neutral: "Neutral",
-        agree: "Agree",
-        calculating: "Mapping your responses...",
-        resultsTitle: "Your Personality Profile",
-        resultsIntro: "Based on your responses, here is the intensity of each pillar of your personality and a detailed analysis of your style of being.",
-        archetypeTitle: "Your Predominant Archetype:",
-        empatheticTitle: "Empathetic Analysis & Growth Insights",
-        restartBtn: "Retake Test",
-        backBtn: "Back",
-        radarChartLabel: "Personality Pillar",
-        footerText: "© 2026 Anima. Based on the scientific Big Five personality model.",
-        // Trait names for the chart
-        trait0: "Emotional Sensitivity",
-        trait1: "Extraversion",
-        trait2: "Openness to Experience",
-        trait3: "Conscientiousness",
-        trait4: "Agreeableness",
-        // Question Texts
-        q1: "When unexpected major disruptions occur in my routine, I easily feel anxious or worried about the outcomes.",
-        q2: "After an exhausting week, the best way to recharge my batteries is by going out with friends or attending social events.",
-        q3: "I prefer exploring new theories, abstract ideas, or exotic places rather than sticking to known, safe habits.",
-        q4: "I keep my spaces and tasks extremely organized and structured, planning my actions step by step.",
-        q5: "I prioritize maintaining a friendly and peaceful environment in discussions, even if I have to compromise or not prove I am right."
-      },
-      es: {
-        welcomeTitle: "Descubre tu Mente",
-        welcomeSub: "Explora tu personalidad a través del modelo científico Big Five. Un análisis rápido, profundo y acogedor en solo 5 preguntas situacionales.",
-        startButton: "Iniciar Prueba",
-        questionOf: "Pregunta {current} de {total}",
-        disagree: "En desacuerdo",
-        neutral: "Neutro",
-        agree: "De acuerdo",
-        calculating: "Mapeando tus respuestas...",
-        resultsTitle: "Tu Perfil de Personalidad",
-        resultsIntro: "Basado en tus respuestas, mira a continuación la intensidad de cada pilar de tu personalidad y un análisis detallado sobre tu forma de ser.",
-        archetypeTitle: "Tu Arquetipo Predominante:",
-        empatheticTitle: "Análisis Empático y Consejos de Desarrollo",
-        restartBtn: "Repetir Prueba",
-        backBtn: "Volver",
-        radarChartLabel: "Pilar de Personalidad",
-        footerText: "© 2026 Anima. Basado en el modelo científico de personalidad Big Five.",
-        // Trait names for the chart
-        trait0: "Sensibilidad Emocional",
-        trait1: "Extraversión",
-        trait2: "Apertura a la Experiencia",
-        trait3: "Responsabilidad",
-        trait4: "Amabilidad",
-        // Question Texts
-        q1: "Cuando surgen imprevistos graves en mi rutina, me siento fácilmente ansioso o preocupado por los resultados.",
-        q2: "Después de una semana agotadora, la mejor manera de recargar mis energías es saliendo con amigos o asistiendo a eventos sociales.",
-        q3: "Prefiero aventurarme en nuevas teorías, ideas abstractas o lugares exóticos en lugar de seguir hábitos conocidos y seguros.",
-        q4: "Mantengo mis espacios y tareas extremadamente organizados y estructurados, planificando mis acciones paso a paso.",
-        q5: "Priorizo mantener un clima amigable y pacífico en las discusiones, incluso si tengo que ceder o no demostrar que tengo razón."
-      },
-      it: {
-        welcomeTitle: "Scopri la tua Mente",
-        welcomeSub: "Esplora la tua personalità attraverso il modello scientifico Big Five. Un'analisi rapida, profonda e accogliente in sole 5 domande situazionali.",
-        startButton: "Inizia il Test",
-        questionOf: "Domanda {current} di {total}",
-        disagree: "Disaccordo",
-        neutral: "Neutrale",
-        agree: "D'accordo",
-        calculating: "Mappatura delle risposte...",
-        resultsTitle: "Il tuo Profilo di Personalità",
-        resultsIntro: "In base alle tue risposte, ecco l'intensità di ciascun pilastro della tua personalità e un'analisi dettagliata del tuo stile d'essere.",
-        archetypeTitle: "Il tuo Archetipo Predominante:",
-        empatheticTitle: "Analisi Empatica e Consigli di Crescita",
-        restartBtn: "Rifai il Test",
-        backBtn: "Indietro",
-        radarChartLabel: "Pilastro della Personalità",
-        footerText: "© 2026 Anima. Basato sul modello scientifico di personalità Big Five.",
-        // Trait names for the chart
-        trait0: "Sensibilità Emotiva",
-        trait1: "Estroversione",
-        trait2: "Apertura all'Esperienza",
-        trait3: "Coscienziosità",
-        trait4: "Gradevolezza",
-        // Question Texts
-        q1: "Quando si verificano gravi imprevisti nella mia routine, mi sento facilmente ansioso o preoccupato per i risultati.",
-        q2: "Dopo una settimana estenuante, il modo migliore per ricaricare le mie batterie è uscire con gli amici o partecipare a eventi sociali.",
-        q3: "Preferisco avventurarmi in nuove teorie, idee astratte o luoghi esotici piuttosto che seguire abitudini note e sicure.",
-        q4: "Mantengo i miei spazi e compiti estremamente organizzati e strutturati, pianificando le mie azioni passo dopo passo.",
-        q5: "Do la priorità al mantenimento di un clima amichevole e pacifico nelle discussioni, anche a costo di cedere o non dimostrare di aver ragione."
-      }
-    };
-
-    /* Predominant Archetype definitions */
-    const archetypes = {
-      0: { // Neuroticism
-        pt: { title: "O Guardião Intuitivo", summary: "Profundo e perceptivo, sua rica jornada interior confere uma inteligência sensível única." },
-        en: { title: "The Intuitive Guardian", summary: "Deep and perceptive, your rich inner journey grants a unique sensitive intelligence." },
-        es: { title: "El Guardián Intuitivo", summary: "Profundo y perceptivo, tu rico viaje interior te otorga una inteligencia sensible única." },
-        it: { title: "Il Guardiano Intuitivo", summary: "Profondo e percettivo, il tuo ricco viaggio interiore ti conferisce un'intelligenza sensibile unica." }
-      },
-      1: { // Extraversion
-        pt: { title: "O Catalisador Social", summary: "Comunicativo e cheio de vivacidade, sua presença brilha e energiza qualquer ambiente." },
-        en: { title: "The Social Catalyst", summary: "Communicative and lively, your presence shines and energizes any environment." },
-        es: { title: "El Catalizador Social", summary: "Comunicativo y lleno de vitalidad, tu presencia brilla y energiza cualquier ambiente." },
-        it: { title: "Il Catalizzatore Sociale", summary: "Comunicativo e vivace, la tua presenza risplende ed energizza qualsiasi ambiente." }
-      },
-      2: { // Openness
-        pt: { title: "O Explorador Mental", summary: "Guiado pela imaginação e curiosidade, você busca expandir limites intelectuais." },
-        en: { title: "The Mind Explorer", summary: "Guided by imagination and curiosity, you seek to expand intellectual boundaries." },
-        es: { title: "El Explorador Mental", summary: "Guiado por la imaginación y la curiosidad, buscas expandir los límites intelectuales." },
-        it: { title: "L'Esploratore Mentale", summary: "Guidato dall'immaginazione e dalla curiosità, cerchi di espandere i confini intellettuali." }
-      },
-      3: { // Conscientiousness
-        pt: { title: "O Estrategista Dedicado", summary: "Focado, metódico e altamente confiável, você constrói caminhos sólidos para o sucesso." },
-        en: { title: "The Dedicated Strategist", summary: "Focused, methodical, and highly reliable, you build solid paths to success." },
-        es: { title: "El Estratega Dedicado", summary: "Enfocado, metódico y altamente confiable, construyes caminos sólidos hacia el éxito." },
-        it: { title: "Lo Strategista Dedicato", summary: "Focalizzato, metodico e altamente affidabile, costruisci percorsi solidi per il successo." }
-      },
-      4: { // Agreeableness
-        pt: { title: "O Conciliador Empático", summary: "Sensível às necessidades alheias, você é a cola que une as pessoas com afeto e cooperação." },
-        en: { title: "The Empathetic Harmonizer", summary: "Sensitive to others' needs, you are the glue that binds people with affection and cooperation." },
-        es: { title: "El Conciliador Empático", summary: "Sensible a las necesidades ajenas, eres el pegamento que une a las personas con afecto y cooperación." },
-        it: { title: "Il Conciliatore Empatico", summary: "Sensibile ai bisogni altrui, sei il collante che unisce le persone con affetto e cooperazione." }
-      }
-    };
-
-    /* Empathetic Trait Descriptions for dynamic assembly */
-    const traitDescriptions = {
-      0: { // Neuroticism / Emotional Sensitivity
-        high: {
-          pt: "Sua alta sensibilidade emocional reflete uma percepção rica e empática do mundo. Você sente as nuances ao seu redor com profundidade. Para evitar sobrecarga mental, crie momentos de silêncio e estabeleça limites saudáveis, transformando sua sensibilidade em uma bússola criativa poderosa.",
-          en: "Your high emotional sensitivity reflects a rich and empathetic perception of the world. You feel the nuances around you deeply. To prevent mental overwhelm, create moments of silence and establish healthy boundaries, turning your sensitivity into a powerful creative compass.",
-          es: "Tu alta sensibilidad emocional refleja una percepción rica y empática del mundo. Sientes los matices a tu alrededor con profundidad. Para evitar la sobrecarga mental, crea momentos de silencio y establece límites saludables, transformando tu sensibilidad en una brújula creativa poderosa.",
-          it: "La tua elevata sensibilità emotiva riflette una percezione ricca ed empatica del mondo. Senti le sfumature intorno a te in modo profondo. Per evitare il sovraccarico mentale, ritagliati momenti di silenzio e stabilisci confini sani, trasformando la tua sensibilità in una potente bussola creativa."
-        },
-        medium: {
-          pt: "Você possui uma estabilidade emocional equilibrada, conseguindo navegar por dias estressantes com resiliência sem perder a conexão com seus sentimentos. Continue praticando o autoconhecimento para manter esse belo centro de gravidade interna.",
-          en: "You possess a balanced emotional stability, managing to navigate stressful days with resilience without losing connection with your feelings. Keep practicing self-awareness to maintain this beautiful internal center of gravity.",
-          es: "Posees una estabilidad emocional equilibrada, logrando navegar por días estresantes con resiliencia sin perder la conexión con tus sentimientos. Sigue practicando el autoconocimiento para mantener este hermoso centro de gravedad interna.",
-          it: "Possiedi un'equilibrio emotivo ben bilanciato, riuscendo a navigare nei giorni stressanti con resilienza senza perdere il contatto con i tuoi sentimenti. Continua a praticare l'autoconsapevolezza per mantenere questo splendido centro di gravità interiore."
-        },
-        low: {
-          pt: "Sua mente funciona como um porto seguro de calma. Sob pressão, você se destaca pela objetividade e controle emocional. Lembre-se apenas de acolher a vulnerabilidade das pessoas ao seu redor, pois o afeto também se nutre de pequenos momentos de exposição emocional.",
-          en: "Your mind works as a safe haven of calm. Under pressure, you stand out for objectivity and emotional control. Just remember to welcome the vulnerability of those around you, as affection is also nurtured by small moments of emotional exposure.",
-          es: "Tu mente funciona como un refugio seguro de calma. Bajo presión, te destacas por tu objetividad y control emocional. Solo recuerda acoger la vulnerabilidad de las personas que te rodean, ya que el afecto también se nutre de pequeños momentos de exposición emocional.",
-          it: "La tua mente funziona come un rifugio sicuro di calma. Sotto pressione, ti distingui per obiettività e controllo emotivo. Ricorda solo di accogliere la vulnerabilità delle persone intorno a te, poiché anche l'affetto si nutre di piccoli momenti di esposizione emotiva."
-        }
-      },
-      1: { // Extraversion
-        high: {
-          pt: "Você irradia uma energia contagiante e se expande no contato com o outro. O mundo social é o seu combustível criativo. Seu desafio é cultivar também a solitude produtiva, descobrindo a riqueza que reside em momentos de recolhimento individual.",
-          en: "You radiate contagious energy and expand when interacting with others. The social world is your creative fuel. Your challenge is to also cultivate productive solitude, discovering the richness that resides in moments of individual reflection.",
-          es: "Irradias una energía contagiosa y te expandes en el contacto con el otro. El mundo social es tu combustible creativo. Tu desafío es cultivar también la soledad productiva, descubriendo la riqueza que reside en los momentos de recogimiento individual.",
-          it: "Radii un'energia contagiosa e ti espandi nel contatto con gli altri. Il mondo sociale è il tuo carburante creativo. La tua sfida è coltivare anche la solitudine produttiva, scoprendo la ricchezza che risiede nei momenti di riflessione individuale."
-        },
-        medium: {
-          pt: "Sua bateria social é dinâmica e adaptável: você transita com facilidade entre a empolgação de uma roda de amigos e o aconchego de uma noite silenciosa. Essa flexibilidade é um grande trunfo para manter relacionamentos saudáveis e autorregulados.",
-          en: "Your social battery is dynamic and adaptable: you transition easily between the excitement of a group of friends and the coziness of a quiet night. This flexibility is a great asset for maintaining healthy and self-regulated relationships.",
-          es: "Tu batería social es dinámica y adaptable: transitas con facilidad entre el entusiasmo de un grupo de amigos y el calor de una noche silenciosa. Esta flexibilidad es una gran ventaja para mantener relaciones saludables y autorreguladas.",
-          it: "La tua batteria sociale è dinamica e adattabile: transiti con facilità tra l'entusiasmo di un gruppo di amici e il calore di una serata silenziosa. Questa flessibilità è una grande risorsa per mantenere relazioni sane e autoregolate."
-        },
-        low: {
-          pt: "Sua energia flui para dentro, nutrindo um mundo interno rico, reflexivo e observador. Você prefere conexões profundas a interações superficiais. Honre seu ritmo de recarga silenciosa e lembre-se de que sua presença discreta carrega uma força imensa.",
-          en: "Your energy flows inward, nurturing a rich, reflective, and observant inner world. You prefer deep connections over superficial interactions. Honor your quiet recharge rhythm and remember that your quiet presence carries immense strength.",
-          es: "Tu energía fluye hacia adentro, nutriendo un mundo interno rico, reflexivo y observador. Prefieres conexiones profundas a interacciones superficiales. Honra tu ritmo de recarga silenciosa y recuerda que tu presencia discreta tiene una fuerza inmensa.",
-          it: "La tua energia scorre verso l'interno, nutrendo un mondo interiore ricco, riflessivo e attento. Preferisci connessioni profonde alle interazioni superficiali. Rispetta il tuo ritmo di ricarica silenziosa e ricorda che la tua presenza discreta porta con sé una forza immensa."
-        }
-      },
-      2: { // Openness
-        high: {
-          pt: "Sua curiosidade intelectual e imaginação são infinitas. Você adora experimentar caminhos novos e ver o mundo sob prismas originais. Tente canalizar essa torrente de ideias criativas em projetos tangíveis para que suas visões ganhem forma e inspirem o mundo.",
-          en: "Your intellectual curiosity and imagination are infinite. You love experimenting with new paths and seeing the world through original prisms. Try to channel this torrent of creative ideas into tangible projects so that your visions take shape and inspire the world.",
-          es: "Tu curiosidad intelectual e imaginación son infinitas. Te encanta experimentar nuevos caminos y ver el mundo bajo prismas originales. Intenta canalizar este torrente de ideas creativas en proyectos tangibles para que tus visiones tomen forma e inspiren al mundo.",
-          it: "La tua curiosità intellettuale e la tua immaginazione sono infinite. Ami sperimentare nuove strade e vedere il mondo attraverso prismi originali. Cerca di incanalare questa corrente di idee creative in progetti tangibili in modo che le tue visioni prendano forma e ispirino il mondo."
-        },
-        medium: {
-          pt: "Você equilibra curiosidade com bom senso. Gosta de novidades, mas não descarta o que já funciona. Essa postura permite absorver inovações com segurança, aplicando a criatividade de forma útil e realizável na sua realidade.",
-          en: "You balance curiosity with common sense. You like novelty but don't discard what already works. This posture allows you to absorb innovations safely, applying creativity in a useful and achievable way to your reality.",
-          es: "Equilibras la curiosidad con el sentido común. Te gusta la novedad, pero no descartas lo que ya funciona. Esta postura te permite absorber innovaciones de forma segura, aplicando la creatividad de manera útil y realizable en tu realidad.",
-          it: "Bilanci la curiosità con il buon senso. Ti piacciono le novità, ma non scarti ciò que già funziona. Questo atteggiamento ti consente di assorbire le innovazioni in sicurezza, applicando la creatività in modo utile e realizzabile nella tua realtà."
-        },
-        low: {
-          pt: "Sua força reside na clareza prática e na valorização de saberes consolidados. Você prefere o terreno firme da realidade ao abstrato. Sua consistência traz segurança para qualquer equipe; busque apenas exercitar a abertura para o novo ocasionalmente, descobrindo surpresas valiosas.",
-          en: "Your strength lies in practical clarity and valuing consolidated knowledge. You prefer the firm ground of reality over the abstract. Your consistency brings security to any team; just try to practice openness to the new occasionally, discovering valuable surprises.",
-          es: "Tu fuerza reside en la claridad práctica y en la valoración de los saberes consolidados. Prefieres el terreno firme de la realidad a lo abstracto. Tu consistencia aporta seguridad a cualquier equipo; solo busca ejercitar la apertura a lo nuevo ocasionalmente, descubriendo sorpresas valiosas.",
-          it: "La tua forza risiede nella chiarezza pratica e nella valorizzazione delle conoscenze consolidate. Preferisci il terreno solido della realtà all'astratto. La tua coerenza porta sicurezza in qualsiasi gruppo; cerca solo di esercitare occasionalmente l'apertura al nuovo, scoprendo preziose sorprese."
-        }
-      },
-      3: { // Conscientiousness
-        high: {
-          pt: "Sua dedicação, disciplina e capricho são admiráveis. Você constrói pontes sólidas entre o planejamento e a execução. Lembre-se de ser gentil consigo mesmo nos dias em que as coisas fogem do controle, pois o inesperado também guarda oportunidades imperdíveis.",
-          en: "Your dedication, discipline, and attention to detail are admirable. You build solid bridges between planning and execution. Remember to be gentle with yourself on days when things get out of hand, as the unexpected also holds unmissable opportunities.",
-          es: "Tu dedicación, disciplina y esmero son admirables. Construyes puentes sólidos entre la planificación y la ejecución. Recuerda ser amable contigo mismo en los días en que las cosas se salen de control, ya que lo inesperado también guarda oportunidades imperdibles.",
-          it: "La tua dedizione, disciplina e cura sono ammirevoli. Costruisci ponti solidi tra pianificazione ed esecuzione. Ricorda di essere gentile con te stesso nei giorni in cui le cose sfuggono al controllo, poiché l'imprevisto riserva anche opportunità imperdibili."
-        },
-        medium: {
-          pt: "Você possui uma abordagem flexível para tarefas: organiza-se o suficiente para cumprir seus compromissos, mas mantém espaço para a espontaneidade. Esse equilíbrio dinâmico ajuda você a manter o ritmo sem se sobrecarregar com metas rígidas demais.",
-          en: "You have a flexible approach to tasks: you organize enough to meet your commitments, but leave room for spontaneity. This dynamic balance helps you keep pace without overwhelming yourself with overly rigid goals.",
-          es: "Tienes un enfoque flexible para las tareas: te organizas lo suficiente para cumplir tus compromisos, pero dejas espacio para la espontaneidad. Este equilibrio dinámico te ayuda a mantener el ritmo sin abrumarte con metas demasiado rígidas.",
-          it: "Hai un approccio flessibile ai compiti: ti organizzi quanto basta per rispettare i tuoi impegni, ma lasci spazio alla spontaneità. Questo equilibrio dinamico ti aiuta a mantenere il passo senza sovraccaricarti con obiettivi troppo rigidi."
-        },
-        low: {
-          pt: "A adaptabilidade espontânea é sua assinatura. Você lida muito bem com fluxos livres e momentos de improvisação criativa. Para impulsionar seus sonhos, busque adotar micro-hábitos de organização, criando estruturas leves que sustentem seu espírito livre.",
-          en: "Spontaneous adaptability is your signature. You handle free flows and creative improvisation very well. To boost your dreams, try adopting micro-habits of organization, creating lightweight structures that support your free spirit.",
-          es: "La adaptabilidad espontánea es tu firma. Manejas muy bien los flujos libres y la improvisación creativa. Para impulsar tus sueños, busca adoptar microhábitos de organización, creando estructuras ligeras que sostengan tu espíritu libre.",
-          it: "L'adattabilità spontanea è la tua firma. Gestisci molto bene i flussi liberi e l'improvvisazione creativa. Per dare slancio ai tuoi sogni, cerca di adottare micro-abitudini di organizzazione, creando strutture leggere che sostengano il tuo spirito libero."
-        }
-      },
-      4: { // Agreeableness
-        high: {
-          pt: "Sua presença é um bálsamo de acolhimento. Você prioriza naturalmente a harmonia coletiva e a cooperação. Cuide apenas para não silenciar sua própria voz ou esquecer suas necessidades pessoais na busca contínua por agradar ou pacificar.",
-          en: "Your presence is a soothing balm. You naturally prioritize collective harmony and cooperation. Just take care not to silence your own voice or forget your personal needs in the continuous search to please or pacify.",
-          es: "Tu presencia es un bálsamo de acogida. Priorizas naturalmente la armonía colectiva y la cooperación. Solo cuida de no silenciar tu propia voz ni olvidar tus necesidades personales en la búsqueda continua por agradar o pacificar.",
-          it: "La tua presenza è un balsamo di accoglienza. Dai naturalmente priorità all'armonia collettiva e alla cooperazione. Fai solo attenzione a non mettere a tacere la tua voce o a dimenticare le tue esigenze personali nella continua ricerca di compiacere o pacificare."
-        },
-        medium: {
-          pt: "Você sabe equilibrar a empatia com a assertividade. Colabora com entusiasmo no grupo, mas não hesita em defender seus pontos de vista com clareza. Essa inteligência relacional favorece parcerias sólidas e francas.",
-          en: "You know how to balance empathy with assertiveness. You collaborate with enthusiasm in groups but don't hesitate to clarify and defend your views. This relational intelligence favors solid and frank partnerships.",
-          es: "Sabes equilibrar la empatía con la asertividad. Colaboras con entusiasmo en el grupo, pero no dudas en defender tus puntos de vista con claridad. Esta inteligencia relacional favorece alianzas sólidas y francas.",
-          it: "Sai bilanciare l'empatia con l'assertività. Collabori con entusiasmo nel gruppo, ma non esiti a difendere i tuoi punti di vista con chiarezza. Questa intelligenza relazionale favorisce partnership solide e franche."
-        },
-        low: {
-          pt: "Sua comunicação é direta, franca e focada em resultados objetivos. Você não teme o debate intelectual e valoriza a verdade factual. Ao expressar suas conclusões críticas, experimente suavizar o tom para que sua inteligência encontre menos resistências interpessoais.",
-          en: "Your communication is direct, frank, and focused on objective results. You do not fear intellectual debate and value factual truth. When expressing your critical conclusions, try softening the tone so that your intelligence meets less interpersonal resistance.",
-          es: "Tu comunicación es directa, franca y enfocada en resultados objetivos. No temes al debate intelectual y valoras la verdad factual. Al expresar tus conclusiones críticas, experimenta suavizar el tono para que tu inteligencia encuentre menos resistencias interpersonales.",
-          it: "La tua comunicazione è diretta, franca e focalizzata su risultati obiettivi. Non temi il dibattito intellettuale e apprezzi la verità dei fatti. Nel comunicare le tue conclusioni critiche, prova a addocire il tono affinché la tua intelligenza trovi meno resistenze interpersonali."
-        }
-      }
-    };
-
-    /* App State Management */
-    let currentQuestionIndex = 0;
-    let answers = [null, null, null, null, null];
-    let myChart = null;
-
-    /* Utility function to replace placeholders */
-    function formatString(str, params) {
-      let formatted = str;
-      for (const key in params) {
-        formatted = formatted.replace(new RegExp(`\\{${key}\\}`, 'g'), params[key]);
-      }
-      return formatted;
+// Matriz de Perguntas Expandida (15 itens para maior profundidade)
+const translations = {
+    pt: {
+        title: "Big Five Assessment - Pro",
+        subtitle: "Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.",
+        btn: "Gerar Relatório Avançado", resTitle: "Seu Perfil Neurocognitivo", analysis: "Diagnóstico Gemini Pro",
+        labels: ["Abertura", "Conscienciosidade", "Extroversão", "Amabilidade", "Neuroticismo"],
+        opt1: "Discordo", opt2: "Neutro", opt3: "Concordo",
+        q1: "1. Gosto de destrinchar teorias complexas e entender os porquês, mesmo sem aplicação prática imediata.",
+        q2: "2. Sinto forte necessidade de originalidade nas minhas criações e projetos, evitando cópias literais.",
+        q3: "3. Prefiro experimentar variações exóticas e novas abordagens a seguir um padrão testado e seguro.",
+        q4: "4. Mantenho meus arquivos, setups e planos diários meticulosamente estruturados e limpos.",
+        q5: "5. Se estabeleço um objetivo (como uma rotina de treinos ou foco técnico), sigo até o fim com alta autodisciplina.",
+        q6: "6. Antes de tomar uma decisão importante, analiso friamente os recursos disponíveis e descarto o que não serve.",
+        q7: "7. Em ambientes sociais intensos ou lidando muito com o público, sinto minha energia ser drenada rapidamente. (Inversa)",
+        q8: "8. Em discussões ou projetos em grupo, sinto-me confortável em assumir o comando e direcionar o caminho.",
+        q9: "9. Prefiro rotinas dinâmicas e ambientes movimentados a passar longos períodos em silêncio absoluto.",
+        q10: "10. Costumo ceder ou buscar a harmonia em equipe, mesmo que minha ideia inicial fosse ligeiramente diferente.",
+        q11: "11. Priorizo a verdade nua e crua e a eficiência lógica, mesmo que precise ser firme ou cético com as pessoas. (Inversa)",
+        q12: "12. Tendo a acreditar que as pessoas têm boas intenções profissionais até que me provem o contrário.",
+        q13: "13. Diante de imprevistos e caos repentinos, consigo virar a chave rápido sem deixar o estresse mudar meu humor. (Inversa)",
+        q14: "14. Costumo remoer pequenos erros do dia a dia e me cobro excessivamente pela perfeição.",
+        q15: "15. Mudanças abruptas de cenário ou regras no trabalho me geram uma ansiedade perceptível antes de eu agir.",
+        feedback: "Análise Concluída com Sucesso! O seu gráfico de radar reflete um mapeamento de alta fidelidade. Você apresenta um perfil equilibrado entre a exploração cognitiva (Alta Abertura) e a execução estratégica (Conscienciosidade). A sua reatividade ao ambiente é controlada por mecanismos de análise lógica, permitindo uma tomada de decisão fria sob pressão, enquanto seus momentos de introspecção atuam como um ponto crucial de recuperação neural e foco."
+    },
+    en: {
+        title: "Big Five Assessment - Pro",
+        subtitle: "In-depth analysis of your personality structure through 15 scientific sub-factors.",
+        btn: "Generate Advanced Report", resTitle: "Your Neurocognitive Profile", analysis: "Gemini Pro Diagnosis",
+        labels: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"],
+        opt1: "Disagree", opt2: "Neutral", opt3: "Agree",
+        q1: "1. I enjoy dissecting complex theories and understanding the 'why', even without immediate practical use.",
+        q2: "2. I feel a strong need for originality in my creations and projects, avoiding literal copies.",
+        q3: "3. I prefer trying exotic variations and new approaches over following a tested, safe pattern.",
+        q4: "4. I keep my files, setups, and daily plans meticulously structured and clean.",
+        q5: "5. If I set a goal (like a training routine or technical focus), I follow through with high self-discipline.",
+        q6: "6. Before making an important decision, I coldly analyze available resources and discard what doesn't work.",
+        q7: "7. In intense social environments or dealing heavily with the public, I feel my energy drain quickly. (Inverse)",
+        q8: "8. In discussions or group projects, I feel comfortable taking charge and directing the path.",
+        q9: "9. I prefer dynamic routines and bustling environments over spending long periods in absolute silence.",
+        q10: "10. I usually compromise or seek team harmony, even if my initial idea was slightly different.",
+        q11: "11. I prioritize raw truth and logical efficiency, even if I need to be firm or skeptical with people. (Inverse)",
+        q12: "12. I tend to believe that people have good professional intentions until proven otherwise.",
+        q13: "13. In the face of unexpected events and sudden chaos, I can pivot quickly without letting stress change my mood. (Inverse)",
+        q14: "14. I tend to ruminate on small daily mistakes and push myself excessively for perfection.",
+        q15: "15. Abrupt changes in scenarios or rules at work generate noticeable anxiety before I can act.",
+        feedback: "Analysis Successfully Completed! Your radar chart reflects a high-fidelity mapping. You present a balanced profile between cognitive exploration (High Openness) and strategic execution (Conscientiousness). Your reactivity to the environment is controlled by logical analysis mechanisms, allowing cool decision-making under pressure, while your moments of introspection act as a crucial point of neural recovery and focus."
     }
+};
 
-    /* Trait level categorizer */
-    function getLevel(score) {
-      if (score >= 70) return 'high';
-      if (score >= 40) return 'medium';
-      return 'low';
-    }
+let currentLang = "pt";
+let userAnswers = Array(15).fill(2);
 
-    /* Screen manager helper */
-    function switchScreen(screenName) {
-      const screens = ['welcome', 'question', 'loading', 'results'];
-      screens.forEach(s => {
-        document.getElementById(`screen-${s}`).classList.remove('active');
-      });
-      document.getElementById(`screen-${screenName}`).classList.add('active');
-    }
-
-    /* Global UI Translation Update */
-    function updateUILanguage() {
-      const currentLang = document.documentElement.lang || 'pt';
-      const dict = translations[currentLang];
-      
-      // Update text in elements with data-i18n attribute
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-          el.textContent = dict[key];
-        }
-      });
-
-      // Handle custom translations dynamically based on states
-      if (document.getElementById('screen-question').classList.contains('active')) {
-        updateQuestionDisplay();
-      }
-      if (document.getElementById('screen-results').classList.contains('active')) {
-        updateResultsDisplay();
-      }
-    }
-
-    /* Initialize Test State */
-    function initQuiz() {
-      currentQuestionIndex = 0;
-      answers = [null, null, null, null, null];
-      updateUILanguage();
-      switchScreen('welcome');
-    }
-
-    /* Start Questionnaire */
-    function startQuiz() {
-      currentQuestionIndex = 0;
-      showQuestion(currentQuestionIndex);
-    }
-
-    /* Show Question based on Index */
-    function showQuestion(index) {
-      currentQuestionIndex = index;
-      const currentLang = document.documentElement.lang || 'pt';
-      const dict = translations[currentLang];
-      
-      // Progress Bar Calculation
-      const percent = ((index + 1) / 5) * 100;
-      document.getElementById('progress-bar').style.width = percent + '%';
-      
-      // Header Label Update
-      const headerText = formatString(dict.questionOf, { current: index + 1, total: 5 });
-      document.getElementById('question-header').textContent = headerText;
-      
-      // Question Text Update
-      const questionKey = `q${index + 1}`;
-      document.getElementById('question-text').textContent = dict[questionKey];
-      
-      switchScreen('question');
-    }
-
-    /* Answer Selection handler */
-    function selectAnswer(score) {
-      answers[currentQuestionIndex] = score;
-      
-      if (currentQuestionIndex < 4) {
-        currentQuestionIndex++;
-        showQuestion(currentQuestionIndex);
-      } else {
-        showLoading();
-      }
-    }
-
-    /* Back Button handler */
-    function goBack() {
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        showQuestion(currentQuestionIndex);
-      } else {
-        initQuiz();
-      }
-    }
-
-    /* Loading Transition simulation */
-    function showLoading() {
-      switchScreen('loading');
-      setTimeout(() => {
-        showResults();
-      }, 1200);
-    }
-
-    /* Generate and Show Personality Results */
-    function showResults() {
-      updateResultsDisplay();
-      switchScreen('results');
-    }
-
-    /* Compile Results calculations and texts */
-    function updateResultsDisplay() {
-      const currentLang = document.documentElement.lang || 'pt';
-      const dict = translations[currentLang];
-      
-      // Score calculations from answers
-      const scores = [...answers]; 
-      
-      // Select the predominant trait index
-      let maxVal = -1;
-      let maxIdx = 0;
-      for (let i = 0; i < scores.length; i++) {
-        if (scores[i] > maxVal) {
-          maxVal = scores[i];
-          maxIdx = i;
-        }
-      }
-      
-      // Render Archetype Information
-      const arch = archetypes[maxIdx][currentLang];
-      document.getElementById('archetype-title').textContent = arch.title;
-      document.getElementById('archetype-summary').textContent = arch.summary;
-      
-      // Assemble Dynamic Empathetic Feedback text
-      let analysisHtml = '';
-      for (let i = 0; i < scores.length; i++) {
-        const level = getLevel(scores[i]);
-        const desc = traitDescriptions[i][level][currentLang];
-        analysisHtml += `<p class="analysis-paragraph">${desc}</p>`;
-      }
-      document.getElementById('analysis-text').innerHTML = analysisHtml;
-      
-      // Radar Chart instantiation
-      renderChart(scores);
-    }
-
-    /* Chart.js Radar Render Logic */
-    function renderChart(scores) {
-      const currentLang = document.documentElement.lang || 'pt';
-      const dict = translations[currentLang];
-      const ctx = document.getElementById('radarChart').getContext('2d');
-      
-      const labels = [
-        dict.trait0, // Neuroticism
-        dict.trait1, // Extraversion
-        dict.trait2, // Openness
-        dict.trait3, // Conscientiousness
-        dict.trait4  // Agreeableness
-      ];
-      
-      if (myChart) {
-        myChart.data.labels = labels;
-        myChart.data.datasets[0].data = scores;
-        myChart.data.datasets[0].label = dict.radarChartLabel || 'Pilar';
-        myChart.update();
-      } else {
-        myChart = new Chart(ctx, {
-          type: 'radar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: dict.radarChartLabel || 'Pilar',
-              data: scores,
-              backgroundColor: 'rgba(99, 102, 241, 0.12)',
-              borderColor: 'rgba(99, 102, 241, 0.75)',
-              borderWidth: 2,
-              pointBackgroundColor: '#6366f1',
-              pointBorderColor: '#ffffff',
-              pointBorderWidth: 1.5,
-              pointRadius: 4.5,
-              pointHoverRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              r: {
-                angleLines: {
-                  color: 'rgba(15, 23, 42, 0.08)'
-                },
-                grid: {
-                  color: 'rgba(15, 23, 42, 0.05)'
-                },
-                pointLabels: {
-                  color: '#475569',
-                  font: {
-                    family: "'Plus Jakarta Sans', sans-serif",
-                    size: 11,
-                    weight: '700'
-                  }
-                },
-                ticks: {
-                  display: false
-                },
-                suggestedMin: 0,
-                suggestedMax: 100
-              }
-            },
-            plugins: {
-              legend: {
-                display: false
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return context.raw + '%';
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
-    }
-
-    /* Retake Quiz Handler */
-    function resetQuiz() {
-      initQuiz();
-    }
-
-    /* DOM Loaded Initialization & Locale Setup */
-    window.addEventListener('DOMContentLoaded', () => {
-      // Browser Language Detection
-      const browserLang = navigator.language.slice(0, 2).toLowerCase();
-      let defaultLang = 'pt';
-      if (['pt', 'en', 'es', 'it'].includes(browserLang)) {
-        defaultLang = browserLang;
-      }
-      
-      const langSelect = document.getElementById('lang-select');
-      langSelect.value = defaultLang;
-      document.documentElement.lang = defaultLang;
-      
-      // Language Switcher Listener
-      langSelect.addEventListener('change', (e) => {
-        const selectedLang = e.target.value;
-        document.documentElement.lang = selectedLang;
-        updateUILanguage();
-      });
-      
-      initQuiz();
+function renderQuestions() {
+    const container = document.getElementById("questions-container");
+    if (!container) return;
+    container.innerHTML = "";
+    const t = translations[currentLang] || translations["pt"];
+    const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15"];
+    qKeys.forEach((key, index) => {
+        const qCard = document.createElement("div");
+        qCard.className = "question-card";
+        qCard.innerHTML = `
+            <div class="question-text">${t[key]}</div>
+            <div class="options">
+                <button class="btn-option ${userAnswers[index]===1?'selected':''}" onclick="selectOption(${index}, 1)">${t.opt1}</button>
+                <button class="btn-option ${userAnswers[index]===2?'selected':''}" onclick="selectOption(${index}, 2)">
+                    ${t.opt2}</button>
+                <button class="btn-option ${userAnswers[index]===3?'selected':''}" onclick="selectOption(${index}, 3)">
+                    ${t.opt3}</button>
+            </div>`;
+        container.appendChild(qCard);
     });
+    document.getElementById("txt-title").innerText = t.title;
+    document.getElementById("txt-subtitle").innerText = t.subtitle;
+    document.getElementById("btn-calc").innerText = t.btn;
+    document.getElementById("txt-res-title").innerText = t.resTitle;
+    document.getElementById("txt-analysis").innerText = t.analysis;
+    document.getElementById("txt-feedback-content").innerText = t.feedback;
+}
+function selectOption(qIndex, val) { userAnswers[qIndex] = val; renderQuestions(); }
+function changeLanguage() { currentLang = document.getElementById("lang-select").value; renderQuestions(); }
+function calculateResult() {
+    document.getElementById("quiz-section").style.display = "none";
+    document.getElementById("result-section").style.display = "block";
+    const mapScore = (val) => val === 1 ? 20 : (val === 2 ? 60 : 100);
+    const mapInverse = (val) => val === 1 ? 100 : (val === 2 ? 60 : 20);
+    const openScores = [mapScore(userAnswers[0]), mapScore(userAnswers[1]), mapScore(userAnswers[2])];
+    const scoreO = openScores.reduce((a, b) => a + b, 0) / 3;
+    const consScores = [mapScore(userAnswers[3]), mapScore(userAnswers[4]), mapScore(userAnswers[5])];
+    const scoreC = consScores.reduce((a, b) => a + b, 0) / 3;
+    const extScores = [mapInverse(userAnswers[6]), mapScore(userAnswers[7]), mapScore(userAnswers[8])];
+    const scoreE = extScores.reduce((a, b) => a + b, 0) / 3;
+    const agrScores = [mapScore(userAnswers[9]), mapInverse(userAnswers[10]), mapScore(userAnswers[11])];
+    const scoreA = agrScores.reduce((a, b) => a + b, 0) / 3;
+    const neuScores = [mapInverse(userAnswers[12]), mapScore(userAnswers[13]), mapScore(userAnswers[14])];
+    const scoreN = neuScores.reduce((a, b) => a + b, 0) / 3;
+    const ctx = document.getElementById("radarChart").getContext("2d");
+    const t = translations[currentLang] || translations["pt"];
+    new Chart(ctx, {
+        type: "radar",
+        data: {
+            labels: t.labels,
+            datasets: [{
+                label: "Espectro FFM",
+                data: [scoreO, scoreC, scoreE, scoreA, scoreN],
+                backgroundColor: "rgba(99, 102, 241, 0.15)",
+                borderColor: "rgba(99, 102, 241, 1)",
+                borderWidth: 3,
+                pointBackgroundColor: "rgba(99, 102, 241, 1)",
+                pointRadius: 4
+            }]
+        },
+        options: {
+            scales: {
+                r: {
+                    angleLines: { display: true, color: "#e2e8f0" },
+                    grid: { color: "#e2e8f0" },
+                    pointLabels: { font: { size: 14, weight: "bold", family: "Plus Jakarta Sans" }, color: "#1e293b" },
+                    suggestedMin: 0, suggestedMax: 100, ticks: { display: false }
+                }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+window.onload = function() { renderQuestions(); };
+  </script>
+  
+  <style>
+    /* Reset and Core Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0f172a;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,20%,0.25) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(263,45%,15%,0.15) 0, transparent 50%);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .bg-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -10;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.06) 0%, rgba(15, 23, 42, 0) 65%);
+    }
+
+    /* Webkit scrollbars styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Header & Branding */
+    .quiz-header {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      background: #6366f1;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #6366f1;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .lang-select {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .lang-select:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .lang-select option {
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: normal;
+    }
+
+    /* Main Container Card */
+    .card {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 24px;
+      padding: 48px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #475569;
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 480px;
+      align-self: center;
+    }
+
+    /* Scrollable Question Area */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding-right: 12px;
+      margin-bottom: 24px;
+    }
+
+    .question-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .question-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.05);
+      background: #ffffff;
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.5;
+    }
+
+    /* Form Option Buttons */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .btn-option {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      padding: 12px 8px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+      outline: none;
+    }
+
+    .btn-option:hover {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .btn-option.selected {
+      background: #6366f1;
+      color: #ffffff;
+      border-color: #6366f1;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Submit / Rebuild Buttons */
+    .btn-calculate {
+      background: #6366f1;
+      color: #ffffff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 12px;
+      outline: none;
+    }
+
+    .btn-calculate:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-calculate:active {
+      transform: translateY(0);
+    }
+
+    /* Results layout */
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px 0 28px;
+    }
+
+    .analysis-container {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .analysis-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .analysis-text {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .quiz-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      max-width: 680px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    /* Responsiveness adjustments */
+    @media (max-width: 640px) {
+      html {
+        font-size: 14px;
+      }
+      .card {
+        padding: 32px 20px;
+        border-radius: 20px;
+      }
+      .title {
+        font-size: 24px;
+      }
+      .questions-list {
+        max-height: 45vh;
+        padding-right: 6px;
+      }
+      .question-card {
+        padding: 16px;
+      }
+      .btn-option {
+        padding: 10px 4px;
+        font-size: 12px;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  
+  <header class="quiz-header">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">Anima</span>
+    </div>
+    <select id="lang-select" class="lang-select" onchange="changeLanguage()">
+      <option value="pt">PT</option>
+      <option value="en">EN</option>
+    </select>
+  </header>
+
+  <!-- QUIZ SECTION -->
+  <main id="quiz-section" class="card">
+    <h1 id="txt-title" class="title">Big Five Assessment - Pro</h1>
+    <p id="txt-subtitle" class="subtitle">Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.</p>
+    
+    <div id="questions-container" class="questions-list">
+      <!-- Dynamic list of questions -->
+    </div>
+    
+    <button id="btn-calc" class="btn-calculate" onclick="calculateResult()">
+      Gerar Relatório Avançado
+    </button>
+  </main>
+
+  <!-- RESULT SECTION -->
+  <main id="result-section" class="card" style="display: none;">
+    <h1 id="txt-res-title" class="title">Seu Perfil Neurocognitivo</h1>
+    
+    <div class="chart-wrapper">
+      <canvas id="radarChart"></canvas>
+    </div>
+    
+    <div class="analysis-container">
+      <h3 class="analysis-title">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: #6366f1;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548 .547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        <span id="txt-analysis">Diagnóstico Gemini Pro</span>
+      </h3>
+      <div id="txt-feedback-content" class="analysis-text">
+        <!-- Feedback content goes here -->
+      </div>
+    </div>
+    
+    <button class="btn-calculate" style="margin-top: 24px;" onclick="location.reload()">
+      Refazer Teste
+    </button>
+  </main>
+
+  <footer class="quiz-footer">
+    <p>© 2026 Anima. Baseado no modelo científico Big Five de personalidade.</p>
+  </footer>
+
+  <script>
+    // This script block will be completely replaced by the update_test.sh execution
   </script>
 </body>
 </html>
