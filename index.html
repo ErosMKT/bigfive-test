@@ -127,7 +127,7 @@
       background: #ffffff;
       color: #1e293b;
       border-radius: 24px;
-      padding: 48px;
+      padding: 40px;
       width: 100%;
       max-width: 680px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -196,22 +196,27 @@
     /* Form Option Buttons */
     .options {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
     }
 
     .btn-option {
       background: #ffffff;
       border: 1px solid #e2e8f0;
       color: #64748b;
-      padding: 12px 8px;
+      padding: 12px 6px;
       border-radius: 12px;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
       outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.2;
+      min-height: 48px;
     }
 
     .btn-option:hover {
@@ -258,15 +263,20 @@
       transform: translateY(0);
     }
 
-    /* Results layout */
+    /* Results layout - Optimizing Chart.js container */
     .chart-wrapper {
       position: relative;
       width: 100%;
-      height: 300px;
+      height: 340px; /* Increased to allow point labels to breath */
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 12px 0 28px;
+      overflow: visible;
+    }
+
+    .chart-wrapper canvas {
+      overflow: visible;
     }
 
     .analysis-container {
@@ -315,15 +325,21 @@
         font-size: 24px;
       }
       .questions-list {
-        max-height: 45vh;
+        max-height: 48vh;
         padding-right: 6px;
       }
       .question-card {
         padding: 16px;
       }
+      /* Stacking Likert options vertically on mobile for touch comfort */
+      .options {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
       .btn-option {
-        padding: 10px 4px;
-        font-size: 12px;
+        padding: 12px 16px;
+        font-size: 13px;
+        min-height: auto;
       }
     }
 
@@ -350,6 +366,8 @@
     <select id="lang-select" class="lang-select" onchange="changeLanguage()">
       <option value="pt">PT</option>
       <option value="en">EN</option>
+      <option value="es">ES</option>
+      <option value="it">IT</option>
     </select>
   </header>
 
@@ -397,133 +415,512 @@
   </footer>
 
   <script>
-    // Matriz de Perguntas Expandida (15 itens para maior profundidade)
+    /* 4-Language Translations with Expanded 45-Question Pool (9 questions per valence) */
     const translations = {
-        pt: {
-            title: "Big Five Assessment - Pro",
-            subtitle: "Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.",
-            btn: "Gerar Relatório Avançado", resTitle: "Seu Perfil Neurocognitivo", analysis: "Diagnóstico Gemini Pro",
-            labels: ["Abertura", "Conscienciosidade", "Extroversão", "Amabilidade", "Neuroticismo"],
-            opt1: "Discordo", opt2: "Neutro", opt3: "Concordo",
-            q1: "1. Gosto de destrinchar teorias complexas e entender os porquês, mesmo sem aplicação prática imediata.",
-            q2: "2. Sinto forte necessidade de originalidade nas minhas criações e projetos, evitando cópias literais.",
-            q3: "3. Prefiro experimentar variações exóticas e novas abordagens a seguir um padrão testado e seguro.",
-            q4: "4. Mantenho meus arquivos, setups e planos diários meticulosamente estruturados e limpos.",
-            q5: "5. Se estabeleço um objetivo (como uma rotina de treinos ou foco técnico), sigo até o fim com alta autodisciplina.",
-            q6: "6. Antes de tomar uma decisão importante, analiso friamente os recursos disponíveis e descarto o que não serve.",
-            q7: "7. Em ambientes sociais intensos ou lidando muito com o público, sinto minha energia ser drenada rapidamente. (Inversa)",
-            q8: "8. Em discussões ou projetos em grupo, sinto-me confortável em assumir o comando e direcionar o caminho.",
-            q9: "9. Prefiro rotinas dinâmicas e ambientes movimentados a passar longos períodos em silêncio absoluto.",
-            q10: "10. Costumo ceder ou buscar a harmonia em equipe, mesmo que minha ideia inicial fosse ligeiramente diferente.",
-            q11: "11. Priorizo a verdade nua e crua e a eficiência lógica, mesmo que precise ser firme ou cético com as pessoas. (Inversa)",
-            q12: "12. Tendo a acreditar que as pessoas têm boas intenções profissionais até que me provem o contrário.",
-            q13: "13. Diante de imprevistos e caos repentinos, consigo virar a chave rápido sem deixar o estresse mudar meu humor. (Inversa)",
-            q14: "14. Costumo remoer pequenos erros do dia a dia e me cobro excessivamente pela perfeição.",
-            q15: "15. Mudanças abruptas de cenário ou regras no trabalho me geram uma ansiedade perceptível antes de eu agir.",
-            feedback: "Análise Concluída com Sucesso! O seu gráfico de radar reflete um mapeamento de alta fidelidade. Você apresenta um perfil equilibrado entre a exploração cognitiva (Alta Abertura) e a execução estratégica (Conscienciosidade). A sua reatividade ao ambiente é controlada por mecanismos de análise lógica, permitindo uma tomada de decisão fria sob pressão, enquanto seus momentos de introspecção atuam como um ponto crucial de recuperação neural e foco."
-        },
-        en: {
-            title: "Big Five Assessment - Pro",
-            subtitle: "In-depth analysis of your personality structure through 15 scientific sub-factors.",
-            btn: "Generate Advanced Report", resTitle: "Your Neurocognitive Profile", analysis: "Gemini Pro Diagnosis",
-            labels: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"],
-            opt1: "Disagree", opt2: "Neutral", opt3: "Agree",
-            q1: "1. I enjoy dissecting complex theories and understanding the 'why', even without immediate practical use.",
-            q2: "2. I feel a strong need for originality in my creations and projects, avoiding literal copies.",
-            q3: "3. I prefer trying exotic variations and new approaches over following a tested, safe pattern.",
-            q4: "4. I keep my files, setups, and daily plans meticulously structured and clean.",
-            q5: "5. If I set a goal (like a training routine or technical focus), I follow through with high self-discipline.",
-            q6: "6. Before making an important decision, I coldly analyze available resources and discard what doesn't work.",
-            q7: "7. In intense social environments or dealing heavily with the public, I feel my energy drain quickly. (Inverse)",
-            q8: "8. In discussions or group projects, I feel comfortable taking charge and directing the path.",
-            q9: "9. I prefer dynamic routines and bustling environments over spending long periods in absolute silence.",
-            q10: "10. I usually compromise or seek team harmony, even if my initial idea was slightly different.",
-            q11: "11. I prioritize raw truth and logical efficiency, even if I need to be firm or skeptical with people. (Inverse)",
-            q12: "12. I tend to believe that people have good professional intentions until proven otherwise.",
-            q13: "13. In the face of unexpected events and sudden chaos, I can pivot quickly without letting stress change my mood. (Inverse)",
-            q14: "14. I tend to ruminate on small daily mistakes and push myself excessively for perfection.",
-            q15: "15. Abrupt changes in scenarios or rules at work generate noticeable anxiety before I can act.",
-            feedback: "Analysis Successfully Completed! Your radar chart reflects a high-fidelity mapping. You present a balanced profile between cognitive exploration (High Openness) and strategic execution (Conscientiousness). Your reactivity to the environment is controlled by logical analysis mechanisms, allowing cool decision-making under pressure, while your moments of introspection act as a crucial point of neural recovery and focus."
-        }
+      pt: {
+        title: "Big Five Assessment - Pro",
+        subtitle: "Análise profunda da sua estrutura de personalidade através de 15 sub-fatores científicos.",
+        btn: "Gerar Relatório Avançado",
+        resTitle: "Seu Perfil Neurocognitivo",
+        analysis: "Diagnóstico Gemini Pro",
+        labels: ["Abertura", "Conscienciosidade", "Extroversão", "Amabilidade", "Neuroticismo"],
+        opt1: "Discordo Totalmente",
+        opt2: "Discordo Parcialmente",
+        opt3: "Neutro",
+        opt4: "Concordo Parcialmente",
+        opt5: "Concordo Totalmente",
+        feedback: "Análise Concluída com Sucesso! O seu gráfico de radar reflete um mapeamento de alta fidelidade. Você apresenta um perfil equilibrado entre a exploração cognitiva (Alta Abertura) e a execução estratégica (Conscienciosidade). A sua reatividade ao ambiente é controlada por mecanismos de análise lógica, permitindo uma tomada de decisão fria sob pressão, enquanto seus momentos de introspecção atuam como um ponto crucial de recuperação neural e foco.",
+        
+        // Openness Pool (o1 - o9)
+        o1: "Gosto de destrinchar teorias complexas e entender os porquês, mesmo sem aplicação prática imediata.",
+        o2: "Sinto forte necessidade de originalidade nas minhas criações e projetos, evitando cópias literais.",
+        o3: "Prefiro experimentar variações exóticas e novas abordagens a seguir um padrão testado e seguro.",
+        o4: "Quando viajo, prefiro me perder em ruas desconhecidas e descobrir restaurantes locais sem olhar avaliações online.",
+        o5: "Prefiro assistir a filmes experimentais ou ler livros com finais abertos e ambíguos do que histórias previsíveis.",
+        o6: "Costumo me interessar por assuntos completamente fora da minha área de atuação só pela curiosidade de entender como funcionam.",
+        o7: "Gosto de mudar a disposição dos móveis da minha casa ou testar receitas exóticas só para quebrar a rotina visual.",
+        o8: "Em conversas cotidianas, sinto prazer em discutir cenários futuristas e hipóteses absurdas sobre a sociedade.",
+        o9: "Estou sempre buscando novos gêneros musicais e bandas independentes, enjoando rápido do que toca nas rádios comerciais.",
+        
+        // Conscientiousness Pool (c1 - c9)
+        c1: "Mantenho meus arquivos, setups e planos diários meticulosamente estruturados e limpos.",
+        c2: "Se estabeleço um objetivo (como uma rotina de treinos ou foco técnico), sigo até o fim com alta autodisciplina.",
+        c3: "Antes de tomar uma decisão importante, analiso friamente os recursos disponíveis e descarto o que não serve.",
+        c4: "Mesmo em viagens de lazer, gosto de montar um itinerário detalhado e ter horários definidos para as atividades.",
+        c5: "Prefiro entregar um projeto dias antes do prazo com revisão tripla do que terminá-lo no limite confiando no improviso.",
+        c6: "Controlo meus gastos mensais em planilhas ou aplicativos e raramente compro algo por impulso sem pesquisar antes.",
+        c7: "Não consigo relaxar de verdade no final de semana se houver pendências domésticas ou louça acumulada na pia.",
+        c8: "Considero um desrespeito chegar atrasado a compromissos e planejo minha saída prevendo margens para o trânsito.",
+        c9: "Ao comprar um eletrodoméstico ou software novo, leio o manual de instruções antes de começar a usá-lo.",
+        
+        // Extraversion Pool (e1 - e9)
+        e1: "Em ambientes sociais intensos ou lidando muito com o público, sinto minha energia ser drenada rapidamente.",
+        e2: "Em discussões ou projetos em grupo, sinto-me confortável em assumir o comando e direcionar o caminho.",
+        e3: "Prefiro rotinas dinâmicas e ambientes movimentados a passar longos períodos em silêncio absoluto.",
+        e4: "Depois de um dia estressante de trabalho, a melhor forma de relaxar é encontrar amigos em um bar ou café movimentado.",
+        e5: "Geralmente sou o primeiro a puxar assunto em elevadores, filas ou quando sou apresentado a pessoas novas.",
+        e6: "Raciocino melhor e me sinto mais produtivo debatendo ideias em grupo do que pensando sozinho no meu canto.",
+        e7: "Se passo um final de semana inteiro em casa sem interagir com ninguém de fora, sinto-me entediado e desanimado.",
+        e8: "Gosto de ser o centro das atenções em comemorações e me sinto confortável fazendo apresentações.",
+        e9: "Costumo demonstrar meu entusiasmo de forma expressiva e falar em um tom de voz animado que contagia as pessoas.",
+        
+        // Agreeableness Pool (a1 - a9)
+        a1: "Costumo ceder ou buscar a harmonia em equipe, mesmo que minha ideia inicial fosse ligeiramente diferente.",
+        a2: "Priorizo a verdade nua e crua e a eficiência lógica, mesmo que precise ser firme ou cético com as pessoas.",
+        a3: "Tendo a acreditar que as pessoas têm boas intenções profissionais até que me provem o contrário.",
+        a4: "Costumo pausar minhas próprias tarefas de bom grado para ajudar um colega de trabalho que parece estar sobrecarregado.",
+        a5: "Evito discussões calorosas nas redes sociais ou confrontos diretos, preferindo relevar críticas em nome da paz.",
+        a6: "Amigos costumam me procurar para desabafar porque sabem que vou ouvi-los com paciência e sem julgamentos.",
+        a7: "Fico genuinamente tocado por causas sociais e costumo colaborar com doações ou trabalho voluntário sempre que posso.",
+        a8: "Consigo perdoar mágoas ou desentendimentos passados com facilidade, preferindo reatar laços a guardar ressentimentos.",
+        a9: "Costumo notar o esforço das pessoas e elogiar pequenos detalhes do trabalho ou visual delas para fazê-las se sentirem bem.",
+        
+        // Neuroticism Pool (n1 - n9)
+        n1: "Diante de imprevistos e caos repentinos, consigo virar a chave rápido sem deixar o estresse mudar meu humor.",
+        n2: "Costumo remoer pequenos erros do dia a dia e me cobro excessivamente pela perfeição.",
+        n3: "Mudanças abruptas de cenário ou regras no trabalho me geram uma ansiedade perceptível antes de eu agir.",
+        n4: "Muitas vezes sinto dificuldades para adormecer porque minha mente fica repassando preocupações de problemas futuros.",
+        n5: "Receber uma crítica profissional negativa estraga o meu humor pelo resto do dia, mesmo que tenha sido construtiva.",
+        n6: "Meu humor oscila com facilidade diante de pequenos contratempos, como pegar trânsito ou perder um objeto.",
+        n7: "Muitas vezes me sinto inseguro sobre a imagem que transmito em reuniões e fico pensando se disse algo inadequado.",
+        n8: "Fico excessivamente ansioso ao esperar por uma resposta de e-mail ou mensagem importante, checando o celular toda hora.",
+        n9: "Em semanas de alta pressão acadêmica ou profissional, sinto sintomas físicos de estresse (como dores de cabeça) facilmente."
+      },
+      en: {
+        title: "Big Five Assessment - Pro",
+        subtitle: "In-depth analysis of your personality structure through 15 scientific sub-factors.",
+        btn: "Generate Advanced Report",
+        resTitle: "Your Neurocognitive Profile",
+        analysis: "Gemini Pro Diagnosis",
+        labels: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"],
+        opt1: "Strongly Disagree",
+        opt2: "Partially Disagree",
+        opt3: "Neutral",
+        opt4: "Partially Agree",
+        opt5: "Strongly Agree",
+        feedback: "Analysis Successfully Completed! Your radar chart reflects a high-fidelity mapping. You present a balanced profile between cognitive exploration (High Openness) and strategic execution (Conscientiousness). Your reactivity to the environment is controlled by logical analysis mechanisms, allowing cool decision-making under pressure, while your moments of introspection act as a crucial point of neural recovery and focus.",
+        
+        // Openness Pool (o1 - o9)
+        o1: "I enjoy dissecting complex theories and understanding the 'why', even without immediate practical use.",
+        o2: "I feel a strong need for originality in my creations and projects, avoiding literal copies.",
+        o3: "I prefer trying exotic variations and new approaches over following a tested, safe pattern.",
+        o4: "When traveling, I prefer getting lost in unfamiliar streets and discovering local restaurants without checking online reviews.",
+        o5: "I prefer watching experimental films or reading books with open and ambiguous endings over predictable stories.",
+        o6: "I often get interested in subjects completely outside my field of work just out of curiosity to understand how they work.",
+        o7: "I like rearranging my home furniture or testing exotic recipes just to break the visual routine.",
+        o8: "In everyday conversations, I find pleasure in discussing futuristic scenarios and absurd hypotheses about society.",
+        o9: "I am always looking for new musical genres and independent bands, quickly getting tired of playing what is on commercial radio.",
+        
+        // Conscientiousness Pool (c1 - c9)
+        c1: "I keep my files, setups, and daily plans meticulously structured and clean.",
+        c2: "If I set a goal (like a training routine or technical focus), I follow through with high self-discipline.",
+        c3: "Before making an important decision, I coldly analyze available resources and discard what doesn't work.",
+        c4: "Even on leisure trips, I like to create a detailed itinerary and have pre-defined times for each activity.",
+        c5: "I prefer to deliver a project days before the deadline with triple review rather than finish it at the last minute relying on improvisation.",
+        c6: "I track my monthly expenses in a spreadsheet or app and rarely buy something on impulse without researching first.",
+        c7: "I cannot relax on the weekend if there are domestic chores pending or dishes piled up in the sink.",
+        c8: "I consider it disrespectful to arrive late for appointments and plan my departure allowing margins for traffic.",
+        c9: "When buying a new appliance or software, I read the instruction manual before starting to use it.",
+        
+        // Extraversion Pool (e1 - e9)
+        e1: "In intense social environments or dealing heavily with the public, I feel my energy drain quickly.",
+        e2: "In discussions or group projects, I feel comfortable taking charge and directing the path.",
+        e3: "I prefer dynamic routines and bustling environments over spending long periods in absolute silence.",
+        e4: "After a stressful day at work, the best way to relax is to meet friends in a busy bar or café.",
+        e5: "I am usually the first to start a conversation in elevators, lines, or when introduced to new people.",
+        e6: "I think better and feel more productive discussing ideas in a group than thinking alone in my corner.",
+        e7: "If I spend a whole weekend at home without interacting with anyone outside, I feel bored and discouraged.",
+        e8: "I like being the center of attention at celebrations and feel comfortable making presentations.",
+        e9: "I usually show my enthusiasm expressively and speak in a lively tone of voice that infects people.",
+        
+        // Agreeableness Pool (a1 - a9)
+        a1: "I usually compromise or seek team harmony, even if my initial idea was slightly different.",
+        a2: "I prioritize raw truth and logical efficiency, even if I need to be firm or skeptical with people.",
+        a3: "I tend to believe that people have good professional intentions until proven otherwise.",
+        a4: "I often willingly pause my own tasks to help a coworker who seems overwhelmed.",
+        a5: "I avoid heated arguments on social media or direct confrontations, preferring to overlook criticism in the name of peace.",
+        a6: "Friends often come to me to vent because they know I will listen with patience and without judgment.",
+        a7: "I am genuinely touched by social causes and often collaborate with donations or volunteer work whenever I can.",
+        a8: "I can forgive past hurts or misunderstandings easily, preferring to restore ties rather than hold grudges.",
+        a9: "I usually notice people's efforts and praise small details of their work or appearance to make them feel good.",
+        
+        // Neuroticism Pool (n1 - n9)
+        n1: "In the face of unexpected events and sudden chaos, I can pivot quickly without letting stress change my mood.",
+        n2: "I tend to ruminate on small daily mistakes and push myself excessively for perfection.",
+        n3: "Abrupt changes in scenarios or rules at work generate noticeable anxiety before I can act.",
+        n4: "I often find it hard to fall asleep because my mind keeps reviewing worries of future problems.",
+        n5: "Receiving negative professional feedback ruins my mood for the rest of the day, even if it was constructive.",
+        n6: "My mood fluctuates easily in response to minor setbacks, such as getting stuck in traffic or misplacing an item.",
+        n7: "I often feel insecure about the image I project in meetings and worry about whether I said something inappropriate.",
+        n8: "I get excessively anxious while waiting for a reply to an important email or message, checking my phone all the time.",
+        n9: "During weeks of high academic or professional pressure, I easily experience physical symptoms of stress (like headaches) easily."
+      },
+      es: {
+        title: "Evaluación Big Five - Pro",
+        subtitle: "Análisis profundo de la estructura de su personalidad a través de 15 subfactores científicos.",
+        btn: "Generar Informe Avanzado",
+        resTitle: "Su Perfil Neurocognitivo",
+        analysis: "Diagnóstico Gemini Pro",
+        labels: ["Apertura", "Responsabilidad", "Extraversión", "Amabilidad", "Neuroticismo"],
+        opt1: "Totalmente en Desacuerdo",
+        opt2: "Parcialmente en Desacuerdo",
+        opt3: "Neutro",
+        opt4: "Parcialmente de Acuerdo",
+        opt5: "Totalmente de Acuerdo",
+        feedback: "¡Análisis completado con éxito! Su gráfico de radar refleja un mapeo de alta fidelidad. Presenta un perfil equilibrado entre la exploración cognitiva (Alta Apertura) y la ejecución estratégica (Responsabilidad). Su reactividad al entorno está controlada por mecanismos de análisis lógico, lo que permite una toma de decisiones fría bajo presión, mientras que sus momentos de introspección actúan como un punto crucial de recuperación neural y enfoque.",
+        
+        // Openness Pool (o1 - o9)
+        o1: "Me gusta analizar teorías complejas y entender los porqués, incluso sin aplicación práctica inmediata.",
+        o2: "Siento una fuerte necesidad de originalidad en mis creaciones y proyectos, evitando copias literales.",
+        o3: "Prefiero probar variaciones exóticas y nuevos enfoques antes que seguir un patrón probado y seguro.",
+        o4: "Cuando viajo, prefiero perderme por calles desconocidas y descubrir restaurantes locales sin mirar reseñas en línea.",
+        o5: "Prefiero ver películas experimentales o leer libros con finales abiertos y ambiguos que historias previsibles.",
+        o6: "Suelo interesarme por temas completamente ajenos a mi profesión solo por la curiosidad de entender cómo funcionan.",
+        o7: "Me gusta cambiar la disposición de los muebles de mi casa o probar recetas exóticas solo para romper la rutina visual.",
+        o8: "En conversaciones cotidianas, disfruto discutiendo escenarios futuristas e hipótesis absurdas sobre la sociedad.",
+        o9: "Siempre busco nuevos géneros musicales y bandas independientes, aburriéndome rápido de lo que suena en las radios comerciales.",
+        
+        // Conscientiousness Pool (c1 - c9)
+        c1: "Mantengo mis archivos, configuraciones y planes diarios meticulosamente estructurados y limpios.",
+        c2: "Si me propongo un objetivo (como una rutina de ejercicios o enfoque técnico), lo cumplo con alta autodisciplina.",
+        c3: "Antes de tomar una decisión importante, analizo fríamente los recursos disponibles y descarto lo que no sirve.",
+        c4: "Incluso en viajes de placer, me gusta armar un itinerario detallado y tener horarios definidos para las actividades.",
+        c5: "Prefiero entregar un proyecto días antes del plazo con triple revisión que terminarlo al límite confiando en la improvisación.",
+        c6: "Controlo mis gastos mensuales en hojas de cálculo o aplicaciones y rara vez compro algo por impulso sin investigar antes.",
+        c7: "No puedo relajarme de verdad el fin de semana si hay tareas domésticas pendientes o platos acumulados en el fregadero.",
+        c8: "Considero una falta de respeto llegar tarde a las citas y planifico mi salida previendo márgenes para el tráfico.",
+        c9: "Al comprar un electrodoméstico o software nuevo, leo el manual de instrucciones antes de empezar a usarlo.",
+        
+        // Extraversion Pool (e1 - e9)
+        e1: "En entornos sociales intensos o al tratar mucho con el público, siento que mi energía se agota rápidamente.",
+        e2: "En discusiones o proyectos grupales, me siento cómodo tomando el mando y dirigiendo el camino.",
+        e3: "Prefiero rutinas dinámicas y entornos animados a pasar largos períodos en silencio absoluto.",
+        e4: "Después de un día estresante de trabajo, la mejor manera de relajarme es reunirme con amigos en un bar o café concurrido.",
+        e5: "Suelo ser el primero en iniciar una conversación en ascensores, filas o al ser presentado a personas nuevas.",
+        e6: "Pienso mejor y me siento más productivo debatiendo ideas en grupo que pensando solo en mi rincón.",
+        e7: "Si paso un fin de semana entero en casa sin interactuar con nadie externo, me siento aburrido y desanimado.",
+        e8: "Me gusta ser el centro de atención en las celebraciones y me siento cómodo haciendo presentaciones.",
+        e9: "Suelo mostrar mi entusiasmo de forma expresiva y hablar en un tono de voz animado que contagia a la gente.",
+        
+        // Agreeableness Pool (a1 - a9)
+        a1: "Suelo ceder o buscar la armonía en equipo, incluso si mi idea inicial era ligeramente diferente.",
+        a2: "Priorizo la verdad pura y la eficiencia lógica, aunque tenga que ser firme o escéptico con las personas.",
+        a3: "Tiendo a creer que las personas tienen buenas intenciones profesionales hasta que demuestren lo contrario.",
+        a4: "Suelo pausar mis propias tareas con gusto para ayudar a un compañero de trabajo que parece sobrecargado.",
+        a5: "Evito discusiones acaloradas en redes sociales o confrontaciones directas, prefiriendo ignorar las críticas en aras de la paz.",
+        a6: "Mis amigos suelen buscarme para desahogarse porque saben que los escucharé con paciencia y sin juzgarlos.",
+        a7: "Me conmueven genuinamente las causas sociales y suelo colaborar con donaciones o voluntariado siempre que puedo.",
+        a8: "Puedo perdonar ofensas o malentendidos pasados con facilidad, prefiriendo restablecer lazos que guardar rencor.",
+        a9: "Suelo notar el esfuerzo de las personas y elogiar pequeños detalles de su trabajo o aspecto para hacerlas sentir bien.",
+        
+        // Neuroticism Pool (n1 - n9)
+        n1: "Ante imprevistos y caos repentino, puedo adaptarme rápido sin dejar que el estrés cambie mi estado de ánimo.",
+        n2: "Suelo dar vueltas a pequeños errores cotidianos y me exijo excesivamente la perfección.",
+        n3: "Los cambios abruptos de escenario o reglas en el trabajo me generan una ansiedad perceptible antes de actuar.",
+        n4: "A menudo me cuesta dormir porque mi mente sigue dando vueltas a preocupaciones sobre problemas futuros.",
+        n5: "Recibir críticas profesionales negativas me estropea el humor el resto del día, aunque hayan sido constructivas.",
+        n6: "Mi humor cambia fácilmente ante pequeños contratiempos, como quedar atrapado en el tráfico o perder un objeto.",
+        n7: "A menudo me siento inseguro sobre la imagen que proyecto en las reuniones y me quedo pensando si dije algo inapropiado.",
+        n8: "Me pongo excesivamente ansioso al esperar una respuesta a un correo electrónico o mensaje importante, mirando el móvil a cada rato.",
+        n9: "En semanas de alta presión académica o profesional, experimento síntomas físicos de estrés (como dolores de cabeza) con facilidad."
+      },
+      it: {
+        title: "Valutazione Big Five - Pro",
+        subtitle: "Analisi approfondita della struttura della tua personalità attraverso 15 sub-fattori scientifici.",
+        btn: "Genera Rapporto Avanzato",
+        resTitle: "Il Tuo Profilo Neurocognitivo",
+        analysis: "Diagnostica Gemini Pro",
+        labels: ["Apertura", "Coscienziosità", "Estroversione", "Gradevolezza", "Nevroticismo"],
+        opt1: "Fortemente in Disaccordo",
+        opt2: "Parzialmente in Disaccordo",
+        opt3: "Neutrale",
+        opt4: "Parzialmente d'Accordo",
+        opt5: "Completamente d'Accordo",
+        feedback: "Analisi completata con successo! Il tuo grafico radar riflette una mappatura ad alta fedeltà. Presenti un profilo equilibrato tra esplorazione cognitiva (Alta Apertura) ed esecuzione strategica (Coscienziosità). La tua reattività all'ambiente è controllata da meccanismi di analisi logica, consentendo un processo decisionale freddo sotto pressione, mentre i tuoi momenti di introspeczione fungono da punto cruciale per il recupero neurale e la concentrazione.",
+        
+        // Openness Pool (o1 - o9)
+        o1: "Mi piace sviscerare teorie complesse e capirne i motivi, anche senza un'applicazione pratica immediata.",
+        o2: "Sento un forte bisogno di originalità nelle mie creazioni e nei miei progetti, evitando copie letterali.",
+        o3: "Preferisco sperimentare varianti esotiche e nuovi approcci piuttosto che seguire uno schema collaudato e sicuro.",
+        o4: "Quando viaggio, preferisco perdermi tra strade sconosciute e scoprire ristoranti locali senza guardare le recensioni online.",
+        o5: "Preferisco guardare film sperimentali o leggere libri con finali aperti e ambigui piuttosto che storie prevedibili.",
+        o6: "Spesso mi interesso a materie completamente estranee al mio campo di lavoro solo per la curiosità di capire come funzionano.",
+        o7: "Mi piace cambiare la disposizione dei mobili in casa o provare ricette esotiche solo per rompere la routine visiva.",
+        o8: "Nelle conversazioni quotidiane, trovo piacere nel discutere scenari futuristici e ipotesi assurde sulla società.",
+        o9: "Cerco sempre nuovi generi musicali e band indipendenti, stancandomi rapidamente di ciò che passa sulle radio commerciali.",
+        
+        // Conscientiousness Pool (c1 - c9)
+        c1: "Mantengo i miei file, le mie impostazioni e i miei piani giornalieri meticolosamente strutturati e puliti.",
+        c2: "Se mi prefiggo un obiettivo (come una routine di allenamento o un focus tecnico), lo seguo con alta autodisciplina.",
+        c3: "Prima di prendere una decisione importante, analizzo freddamente le risorse disponibili e scarto ciò che non serve.",
+        c4: "Anche nei viaggi di piacere, mi piace creare un itinerario dettagliato e stabilire orari definiti per le attività.",
+        c5: "Preferisco consegnare un progetto giorni prima della scadenza con una tripla revisione piuttosto che finirlo all'ultimo fidandomi dell'improvvisazione.",
+        c6: "Tengo traccia delle mie spese mensili in fogli di calcolo o app e raramente acquisto qualcosa d'impulso senza prima fare ricerche.",
+        c7: "Non riesco a rilassarmi davvero nel fine settimana se ci sono faccende domestiche in sospeso o piatti accumulati nel lavandino.",
+        c8: "Considero una mancanza di rispetto arrivare in ritardo agli appuntamenti e pianifico la mia partenza prevedendo margini per il traffico.",
+        c9: "Quando acquisto un nuovo elettrodomestico o software, leggo il manuale di istruzioni prima di iniziare a usarlo.",
+        
+        // Extraversion Pool (e1 - e9)
+        e1: "In contesti sociali intensi o interagendo molto con il pubblico, sento che le mie energie si esauriscono rapidamente.",
+        e2: "Nelle discussioni o nei progetti di gruppo, mi sento a mio agio nel prendere il comando e indirizzare il percorso.",
+        e3: "Preferisco routine dinamiche e ambienti vivaci piuttosto che passare lunghi periodi in assoluto silenzio.",
+        e4: "Dopo una giornata di lavoro stressante, il modo migliore per rilassarmi è incontrare gli amici in un bar o in un caffè affollato.",
+        e5: "Di solito sono il primo a iniziare una conversazione in ascensore, in fila o quando vengo presentato a persone nuove.",
+        e6: "Penso meglio e mi sento più produttivo discutendo le idee in gruppo piuttosto che pensando da solo nel mio angolo.",
+        e7: "Se passo un intero fine settimana a casa senza interagire con nessuno all'esterno, mi sento annoiato e scoraggiato.",
+        e8: "Mi piace essere al centro dell'attenzione durante le celebrazioni e mi sento a mio agio nel fare presentazioni.",
+        e9: "Tendo a mostrare il mio entusiasmo in modo espressivo e a parlare con un tono di voce vivace che contagia le persone.",
+        
+        // Agreeableness Pool (a1 - a9)
+        a1: "Tendo a cedere o a cercare l'armonia nel gruppo, anche se la mia idea iniziale era leggermente diversa.",
+        a2: "Do la priorità alla nuda verità e all'efficienza logica, anche se devo essere fermo o scettico con le persone.",
+        a3: "Tendo a credere che le persone abbiano buone intenzioni professionali finché non viene dimostrato il contrario.",
+        a4: "Spesso interrompo volentieri i miei compiti per aiutare un collega di lavoro che sembra sovraccarico.",
+        a5: "Evito discussioni accese sui social network o confronti diretti, preferendo sorvolare sulle critiche in nome della pace.",
+        a6: "Gli amici spesso si rivolgono a me per sfogarsi perché sanno che li ascolterò con pazienza e senza giudicare.",
+        a7: "Sono sinceramente toccato dalle cause sociali e tendo a collaborare con donazioni o volontariato ogni volta che posso.",
+        a8: "Riesco a perdonare facilmente offese o incomprensioni passate, preferendo riallacciare i rapporti piuttosto che portare rancore.",
+        a9: "Tendo a notare l'impegno delle persone e a elogiare piccoli dettagli del loro lavoro o del loro aspetto per farle sentire bene.",
+        
+        // Neuroticism Pool (n1 - n9)
+        n1: "Di fronte a imprevisti e caos improvviso, riesco a riprendermi rapidamente senza lasciare che lo stress influenzi il mio umore.",
+        n2: "Tendo a rimuginare su piccoli errori quotidiani e mi impongo standard di perfezione eccessivi.",
+        n3: "I cambiamenti improvvisi di scenario o di regole sul lavoro mi generano un'ansia evidente prima di agire.",
+        n4: "Spesso ho difficoltà ad addormentarmi perché la mia mente continua a ripassare preoccupazioni su problemi futuri.",
+        n5: "Ricevere critiche professionali negative mi rovina l'umore per il resto della giornata, anche se costruttive.",
+        n6: "Il mio umore oscilla facilmente di fronte a piccoli contrattempi, come rimanere bloccati nel traffico o perdere un oggetto.",
+        n7: "Spesso mi sento insicuro sull'immagine che trasmetto nelle riunioni e mi preoccupo di aver detto qualcosa di inappropriato.",
+        n8: "Divento eccessivamente ansioso mentre aspetto una risposta a un'e-mail o a un messaggio importante, controllando continuamente il cellulare.",
+        n9: "Nelle settimane di forte pressione accademica o professionale, accuso facilmente sintomi fisici di stress (come mal di testa)."
+      }
+    };
+
+    /* Full 45-Question Pool (9 questions per valence dimension) */
+    const valencePools = {
+      openness: [
+        { key: "o1", type: "normal" },
+        { key: "o2", type: "normal" },
+        { key: "o3", type: "normal" },
+        { key: "o4", type: "normal" },
+        { key: "o5", type: "normal" },
+        { key: "o6", type: "normal" },
+        { key: "o7", type: "normal" },
+        { key: "o8", type: "normal" },
+        { key: "o9", type: "normal" }
+      ],
+      conscientiousness: [
+        { key: "c1", type: "normal" },
+        { key: "c2", type: "normal" },
+        { key: "c3", type: "normal" },
+        { key: "c4", type: "normal" },
+        { key: "c5", type: "normal" },
+        { key: "c6", type: "normal" },
+        { key: "c7", type: "normal" },
+        { key: "c8", type: "normal" },
+        { key: "c9", type: "normal" }
+      ],
+      extraversion: [
+        { key: "e1", type: "inverse" },
+        { key: "e2", type: "normal" },
+        { key: "e3", type: "normal" },
+        { key: "e4", type: "normal" },
+        { key: "e5", type: "normal" },
+        { key: "e6", type: "normal" },
+        { key: "e7", type: "normal" },
+        { key: "e8", type: "normal" },
+        { key: "e9", type: "normal" }
+      ],
+      agreeableness: [
+        { key: "a1", type: "normal" },
+        { key: "a2", type: "inverse" },
+        { key: "a3", type: "normal" },
+        { key: "a4", type: "normal" },
+        { key: "a5", type: "normal" },
+        { key: "a6", type: "normal" },
+        { key: "a7", type: "normal" },
+        { key: "a8", type: "normal" },
+        { key: "a9", type: "normal" }
+      ],
+      neuroticism: [
+        { key: "n1", type: "inverse" },
+        { key: "n2", type: "normal" },
+        { key: "n3", type: "normal" },
+        { key: "n4", type: "normal" },
+        { key: "n5", type: "normal" },
+        { key: "n6", type: "normal" },
+        { key: "n7", type: "normal" },
+        { key: "n8", type: "normal" },
+        { key: "n9", type: "normal" }
+      ]
     };
 
     let currentLang = "pt";
-    let userAnswers = Array(15).fill(2);
+    let activeQuestions = []; // Selected 15 questions for the session
+    let userAnswers = Array(15).fill(3); // Answers array (default to 3: Neutral)
+    let myChart = null;
 
+    /* Fisher-Yates Shuffle subarray selector */
+    function getRandomSubarray(arr, size) {
+      let shuffled = arr.slice(0), i = arr.length, temp, index;
+      while (i--) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+      }
+      return shuffled.slice(0, size);
+    }
+
+    /* Select exactly 3 questions per valence (total 15) and randomize the display order */
+    function selectActiveQuestions() {
+      const openQs = getRandomSubarray(valencePools.openness, 3).map(q => ({ ...q, valence: 'O' }));
+      const consQs = getRandomSubarray(valencePools.conscientiousness, 3).map(q => ({ ...q, valence: 'C' }));
+      const extQs = getRandomSubarray(valencePools.extraversion, 3).map(q => ({ ...q, valence: 'E' }));
+      const agrQs = getRandomSubarray(valencePools.agreeableness, 3).map(q => ({ ...q, valence: 'A' }));
+      const neuQs = getRandomSubarray(valencePools.neuroticism, 3).map(q => ({ ...q, valence: 'N' }));
+      
+      const rawSelection = [...openQs, ...consQs, ...extQs, ...agrQs, ...neuQs];
+      // Shuffle selected questions so they appear in random order
+      activeQuestions = getRandomSubarray(rawSelection, 15);
+      userAnswers = Array(15).fill(3); // Reset to 3 (Neutral)
+    }
+
+    /* Render HTML elements of the Dynamic 15-Question Quiz */
     function renderQuestions() {
-        const container = document.getElementById("questions-container");
-        if (!container) return;
-        container.innerHTML = "";
-        const t = translations[currentLang] || translations["pt"];
-        const qKeys = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15"];
-        qKeys.forEach((key, index) => {
-            const qCard = document.createElement("div");
-            qCard.className = "question-card";
-            qCard.innerHTML = `
-                <div class="question-text">${t[key]}</div>
-                <div class="options">
-                    <button class="btn-option ${userAnswers[index]===1?'selected':''}" onclick="selectOption(${index}, 1)">${t.opt1}</button>
-                    <button class="btn-option ${userAnswers[index]===2?'selected':''}" onclick="selectOption(${index}, 2)">
-                        ${t.opt2}</button>
-                    <button class="btn-option ${userAnswers[index]===3?'selected':''}" onclick="selectOption(${index}, 3)">
-                        ${t.opt3}</button>
-                </div>`;
-            container.appendChild(qCard);
-        });
-        document.getElementById("txt-title").innerText = t.title;
-        document.getElementById("txt-subtitle").innerText = t.subtitle;
-        document.getElementById("btn-calc").innerText = t.btn;
-        document.getElementById("txt-res-title").innerText = t.resTitle;
-        document.getElementById("txt-analysis").innerText = t.analysis;
-        document.getElementById("txt-feedback-content").innerText = t.feedback;
+      const container = document.getElementById("questions-container");
+      if (!container) return;
+      container.innerHTML = "";
+      
+      const t = translations[currentLang] || translations["pt"];
+      
+      activeQuestions.forEach((q, index) => {
+        const qCard = document.createElement("div");
+        qCard.className = "question-card";
+        qCard.innerHTML = `
+            <div class="question-text">${t[q.key]}</div>
+            <div class="options">
+                <button class="btn-option ${userAnswers[index] === 1 ? 'selected' : ''}" onclick="selectOption(${index}, 1)">${t.opt1}</button>
+                <button class="btn-option ${userAnswers[index] === 2 ? 'selected' : ''}" onclick="selectOption(${index}, 2)">${t.opt2}</button>
+                <button class="btn-option ${userAnswers[index] === 3 ? 'selected' : ''}" onclick="selectOption(${index}, 3)">${t.opt3}</button>
+                <button class="btn-option ${userAnswers[index] === 4 ? 'selected' : ''}" onclick="selectOption(${index}, 4)">${t.opt4}</button>
+                <button class="btn-option ${userAnswers[index] === 5 ? 'selected' : ''}" onclick="selectOption(${index}, 5)">${t.opt5}</button>
+            </div>`;
+        container.appendChild(qCard);
+      });
+      
+      // Update general text elements
+      document.getElementById("txt-title").innerText = t.title;
+      document.getElementById("txt-subtitle").innerText = t.subtitle;
+      document.getElementById("btn-calc").innerText = t.btn;
+      document.getElementById("txt-res-title").innerText = t.resTitle;
+      document.getElementById("txt-analysis").innerText = t.analysis;
+      document.getElementById("txt-feedback-content").innerText = t.feedback;
     }
-    function selectOption(qIndex, val) { userAnswers[qIndex] = val; renderQuestions(); }
-    function changeLanguage() { currentLang = document.getElementById("lang-select").value; renderQuestions(); }
+
+    function selectOption(qIndex, val) { 
+      userAnswers[qIndex] = val; 
+      renderQuestions(); 
+    }
+
+    function changeLanguage() { 
+      currentLang = document.getElementById("lang-select").value; 
+      document.documentElement.lang = currentLang;
+      renderQuestions(); 
+    }
+
+    /* Calculate results mapping and render Chart.js Radar */
     function calculateResult() {
-        document.getElementById("quiz-section").style.display = "none";
-        document.getElementById("result-section").style.display = "block";
-        const mapScore = (val) => val === 1 ? 20 : (val === 2 ? 60 : 100);
-        const mapInverse = (val) => val === 1 ? 100 : (val === 2 ? 60 : 20);
-        const openScores = [mapScore(userAnswers[0]), mapScore(userAnswers[1]), mapScore(userAnswers[2])];
-        const scoreO = openScores.reduce((a, b) => a + b, 0) / 3;
-        const consScores = [mapScore(userAnswers[3]), mapScore(userAnswers[4]), mapScore(userAnswers[5])];
-        const scoreC = consScores.reduce((a, b) => a + b, 0) / 3;
-        const extScores = [mapInverse(userAnswers[6]), mapScore(userAnswers[7]), mapScore(userAnswers[8])];
-        const scoreE = extScores.reduce((a, b) => a + b, 0) / 3;
-        const agrScores = [mapScore(userAnswers[9]), mapInverse(userAnswers[10]), mapScore(userAnswers[11])];
-        const scoreA = agrScores.reduce((a, b) => a + b, 0) / 3;
-        const neuScores = [mapInverse(userAnswers[12]), mapScore(userAnswers[13]), mapScore(userAnswers[14])];
-        const scoreN = neuScores.reduce((a, b) => a + b, 0) / 3;
-        const ctx = document.getElementById("radarChart").getContext("2d");
-        const t = translations[currentLang] || translations["pt"];
-        new Chart(ctx, {
-            type: "radar",
-            data: {
-                labels: t.labels,
-                datasets: [{
-                    label: "Espectro FFM",
-                    data: [scoreO, scoreC, scoreE, scoreA, scoreN],
-                    backgroundColor: "rgba(99, 102, 241, 0.15)",
-                    borderColor: "rgba(99, 102, 241, 1)",
-                    borderWidth: 3,
-                    pointBackgroundColor: "rgba(99, 102, 241, 1)",
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                scales: {
-                    r: {
-                        angleLines: { display: true, color: "#e2e8f0" },
-                        grid: { color: "#e2e8f0" },
-                        pointLabels: { font: { size: 14, weight: "bold", family: "Plus Jakarta Sans" }, color: "#1e293b" },
-                        suggestedMin: 0, suggestedMax: 100, ticks: { display: false }
-                    }
-                },
-                plugins: { legend: { display: false } }
+      document.getElementById("quiz-section").style.display = "none";
+      document.getElementById("result-section").style.display = "block";
+      
+      // Proportional Mapping: 1 -> 20%, 2 -> 40%, 3 -> 60%, 4 -> 80%, 5 -> 100%
+      const mapScore = (val) => val * 20;
+      
+      // Proportional Inverse Mapping: 1 -> 100%, 2 -> 80%, 3 -> 60%, 4 -> 40%, 5 -> 20%
+      const mapInverse = (val) => 120 - (val * 20);
+      
+      let valenceTotals = { O: 0, C: 0, E: 0, A: 0, N: 0 };
+      
+      activeQuestions.forEach((q, index) => {
+        const val = userAnswers[index];
+        const score = q.type === "normal" ? mapScore(val) : mapInverse(val);
+        valenceTotals[q.valence] += score;
+      });
+      
+      const scoreO = valenceTotals.O / 3;
+      const scoreC = valenceTotals.C / 3;
+      const scoreE = valenceTotals.E / 3;
+      const scoreA = valenceTotals.A / 3;
+      const scoreN = valenceTotals.N / 3;
+      
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      const t = translations[currentLang] || translations["pt"];
+      
+      if (myChart) {
+        myChart.destroy(); // Destroy previous instances to avoid rendering overlay bugs
+      }
+
+      myChart = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: t.labels,
+          datasets: [{
+            label: "Espectro FFM",
+            data: [scoreO, scoreC, scoreE, scoreA, scoreN],
+            backgroundColor: "rgba(99, 102, 241, 0.15)",
+            borderColor: "rgba(99, 102, 241, 1)",
+            borderWidth: 3,
+            pointBackgroundColor: "rgba(99, 102, 241, 1)",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1.5,
+            pointRadius: 4.5,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 35,
+              right: 35,
+              top: 25,
+              bottom: 25
             }
-        });
+          },
+          scales: {
+            r: {
+              angleLines: { display: true, color: "#e2e8f0" },
+              grid: { color: "#e2e8f0" },
+              pointLabels: { 
+                font: { size: 12, weight: "bold", family: "Plus Jakarta Sans" }, 
+                color: "#1e293b",
+                padding: 12 // Adjusts text margin from boundaries to prevent cut-off issues
+              },
+              suggestedMin: 0, 
+              suggestedMax: 100, 
+              ticks: { display: false }
+            }
+          },
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.raw.toFixed(1) + "%";
+                }
+              }
+            }
+          }
+        }
+      });
     }
-    window.onload = function() { renderQuestions(); };
+
+    // Initialize application on load
+    window.onload = function() {
+      selectActiveQuestions();
+      renderQuestions();
+    };
   </script>
 </body>
 </html>
