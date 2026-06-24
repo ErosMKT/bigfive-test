@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anima | Big Five Assessment Flash</title>
+  <!-- Plus Jakarta Sans via Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    /* Reset and Core Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0f172a;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,20%,0.25) 0, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(263,45%,15%,0.15) 0, transparent 50%);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .bg-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -10;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.06) 0%, rgba(15, 23, 42, 0) 65%);
+    }
+
+    /* Webkit scrollbars styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+
+    /* Header & Branding */
+    .quiz-header {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      background: #6366f1;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #6366f1;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .lang-select {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .lang-select:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .lang-select option {
+      background: #0f172a;
+      color: #ffffff;
+      font-weight: normal;
+    }
+
+    /* Main Container Card */
+    .card {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      line-height: 1.6;
+      color: #475569;
+      text-align: center;
+      margin-bottom: 32px;
+      max-width: 480px;
+      align-self: center;
+    }
+
+    /* Input group styles */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      text-align: left;
+    }
+
+    .input-field {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s;
+      background: #f8fafc;
+    }
+
+    .input-field:focus {
+      border-color: #6366f1;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    /* Scrollable Question Area */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 52vh;
+      overflow-y: auto;
+      padding-right: 12px;
+      margin-bottom: 24px;
+    }
+
+    .question-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .question-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 16px -8px rgba(0,0,0,0.05);
+      background: #ffffff;
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    /* Form Option Buttons */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .btn-option {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      padding: 12px 6px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.2;
+      min-height: 48px;
+    }
+
+    .btn-option:hover {
+      background: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .btn-option.selected {
+      background: #6366f1;
+      color: #ffffff;
+      border-color: #6366f1;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Submit / Action Buttons */
+    .btn-calculate {
+      background: #6366f1;
+      color: #ffffff;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 12px;
+      outline: none;
+    }
+
+    .btn-calculate:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-calculate:active {
+      transform: translateY(0);
+    }
+
+    /* Results layout - Optimizing Chart.js container */
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      height: 340px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 12px 0 28px;
+      overflow: visible;
+    }
+
+    .chart-wrapper canvas {
+      overflow: visible;
+    }
+
+    .analysis-container {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .analysis-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .analysis-text {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    /* Recruiter Data Box Area */
+    .recruiter-box {
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 18px;
+      padding: 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .recruiter-header {
+      font-size: 13px;
+      font-weight: 800;
+      color: #475569;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .recruiter-data {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #1e293b;
+      white-space: pre-wrap;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .quiz-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      max-width: 680px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    /* Responsiveness adjustments */
+    @media (max-width: 640px) {
+      html {
+        font-size: 14px;
+      }
+      .card {
+        padding: 32px 20px;
+        border-radius: 20px;
+      }
+      .title {
+        font-size: 24px;
+      }
+      .questions-list {
+        max-height: 48vh;
+        padding-right: 6px;
+      }
+      .question-card {
+        padding: 16px;
+      }
+      /* Stacking Likert options vertically on mobile for touch comfort */
+      .options {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .btn-option {
+        padding: 12px 16px;
+        font-size: 13px;
+        min-height: auto;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  
+  <header class="quiz-header">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-name">Anima Flash</span>
+    </div>
+    <select id="lang-select" class="lang-select" onchange="changeLanguage()">
+      <option value="en">EN</option>
+      <option value="pt">PT</option>
+      <option value="es">ES</option>
+      <option value="it">IT</option>
+      <option value="fr">FR</option>
+      <option value="de">DE</option>
+      <option value="tr">TR</option>
+    </select>
+  </header>
+
+  <!-- ENTRY SECTION -->
+  <main id="entry-section" class="card">
+    <h1 id="txt-entry-title" class="title">Big Five Assessment</h1>
+    <p id="txt-entry-subtitle" class="subtitle">Quick neurocognitive personality profiling tool.</p>
+    
+    <form id="entry-form" onsubmit="startTest(event)">
+      <div class="input-group">
+        <label for="input-firstname" class="input-label" id="lbl-firstname">First Name</label>
+        <input type="text" id="input-firstname" class="input-field" required placeholder="e.g. John">
+      </div>
+      <div class="input-group">
+        <label for="input-surname" class="input-label" id="lbl-surname">Surname</label>
+        <input type="text" id="input-surname" class="input-field" required placeholder="e.g. Smith">
+      </div>
+      
+      <button type="submit" id="btn-start" class="btn-calculate">
+        Start Assessment
+      </button>
+    </form>
+  </main>
+
+  <!-- QUIZ SECTION -->
+  <main id="quiz-section" class="card" style="display: none;">
+    <h1 id="txt-quiz-title" class="title">Big Five Assessment</h1>
+    <p id="txt-quiz-subtitle" class="subtitle">Please read and answer all questions honestly.</p>
+    
+    <div id="questions-container" class="questions-list">
+      <!-- Dynamic list of questions -->
+    </div>
+    
+    <button id="btn-calc" class="btn-calculate" onclick="calculateResult()">
+      Generate Report
+    </button>
+  </main>
+
+  <!-- RESULT SECTION -->
+  <main id="result-section" class="card" style="display: none;">
+    <h1 id="txt-res-title" class="title">Your Neurocognitive Profile</h1>
+    
+    <div class="chart-wrapper">
+      <canvas id="radarChart"></canvas>
+    </div>
+    
+    <!-- Candidate Area 1 -->
+    <div class="analysis-container">
+      <h3 class="analysis-title">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: #6366f1;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548 .547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        <span id="txt-analysis-header">Personal Assessment</span>
+      </h3>
+      <div id="txt-feedback-content" class="analysis-text">
+        <!-- Feedback content goes here -->
+      </div>
+    </div>
+    
+    <!-- Recruiter Area 2 (Compact Data) -->
+    <div class="recruiter-box">
+      <h3 class="recruiter-header" id="txt-rec-header">Recruiter Data</h3>
+      <div id="txt-rec-data" class="recruiter-data"></div>
+      <button onclick="copyRecruiterData(this)" id="btn-copy" class="btn-calculate" style="margin-top: 6px; background: #475569; font-size: 13px; padding: 10px 16px; width: 100%;">
+        Copy Data
+      </button>
+    </div>
+    
+    <button class="btn-calculate" style="margin-top: 24px;" onclick="location.reload()">
+      Retake Test
+    </button>
+  </main>
+
+  <footer class="quiz-footer">
+    <p>© 2026 Anima Flash. Scientific Big Five personality framework.</p>
+  </footer>
+
+  <script>
+    /* Full 7-Language Translations (EN, PT, ES, IT, FR, DE, TR) */
+    const translations = {
+      en: {
+        title: "Big Five Assessment",
+        subtitle: "Quick neurocognitive personality profiling tool.",
+        quizSubtitle: "Please read and answer all questions honestly.",
+        startBtn: "Start Assessment",
+        firstname: "First Name",
+        surname: "Surname",
+        firstPlaceholder: "e.g. John",
+        surPlaceholder: "e.g. Smith",
+        btn: "Generate Report",
+        resTitle: "Your Neurocognitive Profile",
+        analysis: "Personal Assessment",
+        labels: ["Openness", "Conscientiousness", "Extraversion", "Agreeableness", "Neuroticism"],
+        opt1: "Strongly Disagree",
+        opt2: "Partially Disagree",
+        opt3: "Neutral",
+        opt4: "Partially Agree",
+        opt5: "Strongly Agree",
+        feedback: "Analysis Successfully Completed! Your radar chart reflects a high-fidelity mapping. You present a balanced profile between cognitive exploration (High Openness) and strategic execution (Conscientiousness). Your reactivity to the environment is controlled by logical analysis mechanisms, allowing cool decision-making under pressure, while your moments of introspection act as a crucial point of neural recovery and focus.",
+        recruiterHeader: "RECRUITER DATA (Copy for external AI analysis like ChatGPT/Claude):",
+        copyBtn: "Copy Data",
+        copySuccess: "Copied !"
+      },
+      pt: {
+        title: "Big Five Assessment",
+        subtitle: "Ferramenta rápida de mapeamento de perfil de personalidade neurocognitivo.",
+        quizSubtitle: "Por favor, leia e responda todas as questões com sinceridade.",
+        startBtn: "Iniciar Teste",
+        firstname: "Nome",
+        surname: "Sobrenome",
+        firstPlaceholder: "Ex: João",
+        surPlaceholder: "Ex: Silva",
+        btn: "Gerar Relatório",
+        resTitle: "Seu Perfil Neurocognitivo",
+        analysis: "Diagnóstico Pessoal",
+        labels: ["Abertura", "Conscienciosidade", "Extroversão", "Amabilidade", "Neuroticismo"],
+        opt1: "Discordo Totalmente",
+        opt2: "Discordo Parcialmente",
+        opt3: "Neutro",
+        opt4: "Concordo Parcialmente",
+        opt5: "Concordo Totalmente",
+        feedback: "Análise Concluída com Sucesso! O seu gráfico de radar reflete um mapeamento de alta fidelidade. Você apresenta um perfil equilibrado entre a exploração cognitiva (Alta Abertura) e a execução estratégica (Conscienciosidade). A sua reatividade ao ambiente é controlada por mecanismos de análise lógica, permitindo uma tomada de decisão fria sob pressão, enquanto seus momentos de introspecção atuam como um ponto crucial de recuperação neural e foco.",
+        recruiterHeader: "DADOS DO RECRUTADOR (Copie para usar em IAs como ChatGPT/Claude):",
+        copyBtn: "Copiar Dados",
+        copySuccess: "Copiado !"
+      },
+      es: {
+        title: "Evaluación Big Five",
+        subtitle: "Herramienta rápida de perfilado neurocognitivo de la personalidad.",
+        quizSubtitle: "Por favor, lea y responda todas las preguntas con honestidad.",
+        startBtn: "Iniciar Prueba",
+        firstname: "Nombre",
+        surname: "Apellido",
+        firstPlaceholder: "Ej: Juan",
+        surPlaceholder: "Ej: Pérez",
+        btn: "Generar Informe",
+        resTitle: "Su Perfil Neurocognitivo",
+        analysis: "Evaluación Personal",
+        labels: ["Apertura", "Responsabilidad", "Extraversión", "Amabilidad", "Neuroticismo"],
+        opt1: "Totalmente en Desacuerdo",
+        opt2: "Parcialmente en Desacuerdo",
+        opt3: "Neutro",
+        opt4: "Parcialmente de Acuerdo",
+        opt5: "Totalmente de Acuerdo",
+        feedback: "¡Análisis completado con éxito! Su gráfico de radar refleja un mapeo de alta fidelidade. Presenta un perfil equilibrado entre la exploración cognitiva (Alta Apertura) y la ejecución estratégica (Responsabilidad). Su reactividad al entorno está controlada por mecanismos de análisis lógico, lo que permite una toma de decisiones fría bajo presión, mientras que sus momentos de introspección actúan como un punto crucial de recuperación neural y enfoque.",
+        recruiterHeader: "DATOS DEL RECLUTADOR (Copie para usar en IA externa como ChatGPT/Claude):",
+        copyBtn: "Copiar Datos",
+        copySuccess: "¡Copiado!"
+      },
+      it: {
+        title: "Valutazione Big Five",
+        subtitle: "Strumento rapido di profilazione neurocognitiva della personalità.",
+        quizSubtitle: "Si prega di leggere e rispondere sinceramente a tutte le domande.",
+        startBtn: "Inizia Test",
+        firstname: "Nome",
+        surname: "Cognome",
+        firstPlaceholder: "Es: Giovanni",
+        surPlaceholder: "Es: Rossi",
+        btn: "Genera Rapporto",
+        resTitle: "Il Tuo Profilo Neurocognitivo",
+        analysis: "Valutazione Personale",
+        labels: ["Apertura", "Coscienziosità", "Estroversione", "Gradevolezza", "Nevroticismo"],
+        opt1: "Fortemente in Disaccordo",
+        opt2: "Parzialmente in Disaccordo",
+        opt3: "Neutrale",
+        opt4: "Parzialmente d'Accordo",
+        opt5: "Completamente d'Accordo",
+        feedback: "Analisi completata con successo! Il tuo grafico radar riflette una mappatura ad alta fedeltà. Presenti un profilo equilibrato tra esplorazione cognitiva (Alta Apertura) ed esecuzione strategica (Coscienziosità). La tua reattività all'ambiente è controllata da meccanismi di analisi logica, consentendo un processo decisionale freddo sotto pressione, mentre i tuoi momenti di introspezione fungono da punto cruciale per il recupero neurale e la concentrazione.",
+        recruiterHeader: "DATI DEL RECLUTATORE (Copia per l'analisi dell'IA esterna come ChatGPT/Claude):",
+        copyBtn: "Copia Dati",
+        copySuccess: "Copiato !"
+      },
+      fr: {
+        title: "Évaluation Big Five",
+        subtitle: "Outil de profilage neurocognitif rapide de la personnalité.",
+        quizSubtitle: "Veuillez lire et répondre à toutes les questions honnêtement.",
+        startBtn: "Démarrer le Test",
+        firstname: "Prénom",
+        surname: "Nom",
+        firstPlaceholder: "Ex: Jean",
+        surPlaceholder: "Ex: Dupont",
+        btn: "Générer le Rapport",
+        resTitle: "Votre Profil Neurocognitif",
+        analysis: "Évaluation Personnelle",
+        labels: ["Ouverture", "Conscience", "Extraversion", "Agréabilité", "Névrosisme"],
+        opt1: "Fortement en Désaccord",
+        opt2: "Partiellement en Désaccord",
+        opt3: "Neutre",
+        opt4: "Partiellement d'Accord",
+        opt5: "Fortement d'Accord",
+        feedback: "Analyse réussie ! Votre graphique reflète une cartographie de haute fidélité. Vous présentez un profil équilibré entre l'exploration cognitive (Haute Ouverture) et l'exécution stratégique (Conscience). Votre réactivité est contrôlée par des mécanismes logiques, permettant une prise de décision calme sous pression, tandis que vos moments d'introspection servent de point critique pour la récupération neurale.",
+        recruiterHeader: "DONNÉES DU RECRUTEUR (Copier pour analyse IA externe comme ChatGPT/Claude) :",
+        copyBtn: "Copier les Données",
+        copySuccess: "Copié !"
+      },
+      de: {
+        title: "Big Five Bewertung",
+        subtitle: "Schnelles neurokognitives Persönlichkeitsprofiling-Tool.",
+        quizSubtitle: "Bitte lesen und beantworten Sie alle Fragen ehrlich.",
+        startBtn: "Test Starten",
+        firstname: "Vorname",
+        surname: "Nachname",
+        firstPlaceholder: "z.B. Hans",
+        surPlaceholder: "z.B. Müller",
+        btn: "Bericht Generieren",
+        resTitle: "Ihr Neurokognitives Profil",
+        analysis: "Persönliche Bewertung",
+        labels: ["Offenheit", "Gewissenhaftigkeit", "Extraversion", "Verträglichkeit", "Neurotizismus"],
+        opt1: "Stimme Überhaupt Nicht Zu",
+        opt2: "Stimme Teilweise Nicht Zu",
+        opt3: "Neutral",
+        opt4: "Stimme Teilweise Zu",
+        opt5: "Stimme Voll und Ganz Zu",
+        feedback: "Analyse erfolgreich abgeschlossen! Ihr Diagramm spiegelt eine hochpräzise Abbildung wider. Sie weisen ein ausgewogenes Profil zwischen kognitiver Erkundung (Hohe Offenheit) und strategischer Umsetzung (Gewissenhaftigkeit) auf. Ihre Reaktivität wird durch logische Mechanismen gesteuert, was eine kühle Entscheidungsfindung unter Druck ermöglicht, während Ihre Momente der Selbstreflexion als Erholungsphasen dienen.",
+        recruiterHeader: "REKRUTIERER-DATEN (Für externe KI-Analyse wie ChatGPT/Claude kopieren):",
+        copyBtn: "Daten Kopieren",
+        copySuccess: "Kopiert !"
+      },
+      tr: {
+        title: "Big Five Değerlendirmesi",
+        subtitle: "Hızlı nörokognitif kişilik profilleme aracı.",
+        quizSubtitle: "Lütfen tüm soruları okuyun ve dürüstçe yanıtlayın.",
+        startBtn: "Testi Başlat",
+        firstname: "Ad",
+        surname: "Soyad",
+        firstPlaceholder: "Örn: Ahmet",
+        surPlaceholder: "Örn: Yılmaz",
+        btn: "Rapor Oluştur",
+        resTitle: "Nörokognitif Profiliniz",
+        analysis: "Kişisel Değerlendirme",
+        labels: ["Açıklık", "Sorumluluk", "Dışa Dönüklük", "Uyumluluk", "Duygusal Denge"],
+        opt1: "Kesinlikle Katılmıyorum",
+        opt2: "Kısmen Katılmıyorum",
+        opt3: "Kararsızım",
+        opt4: "Kısmen Katılıyorum",
+        opt5: "Kesinlikle Katılıyorum",
+        feedback: "Analiz başarıyla tamamlandı! Grafiğiniz yüksek doğrulukta bir haritalamayı yansıtmaktadır. Bilişsel keşif (Yüksek Açıklık) ile stratejik uygulama (Sorumluluk) arasında dengeli bir profil sergiliyorsunuz. Tepkiselliğiniz mantıksal analiz mekanizmalarıyla kontrol edilerek baskı altında sakin karar vermenizi sağlar, içe dönük anlarınız ise zihinsel yenilenme için kritik bir odak noktası oluşturur.",
+        recruiterHeader: "İŞE ALIM VERİLERİ (ChatGPT/Claude gibi yapay zeka araçları için kopyalayın):",
+        copyBtn: "Verileri Kopyala",
+        copySuccess: "Kopyalandı !"
+      }
+    };
+
+    /* 45-Question Pool (9 questions per valence) */
+    const valencePools = {
+      openness: [
+        { key: "o1", type: "normal" },
+        { key: "o2", type: "normal" },
+        { key: "o3", type: "normal" },
+        { key: "o4", type: "normal" },
+        { key: "o5", type: "normal" },
+        { key: "o6", type: "normal" },
+        { key: "o7", type: "normal" },
+        { key: "o8", type: "normal" },
+        { key: "o9", type: "normal" }
+      ],
+      conscientiousness: [
+        { key: "c1", type: "normal" },
+        { key: "c2", type: "normal" },
+        { key: "c3", type: "normal" },
+        { key: "c4", type: "normal" },
+        { key: "c5", type: "normal" },
+        { key: "c6", type: "normal" },
+        { key: "c7", type: "normal" },
+        { key: "c8", type: "normal" },
+        { key: "c9", type: "normal" }
+      ],
+      extraversion: [
+        { key: "e1", type: "inverse" },
+        { key: "e2", type: "normal" },
+        { key: "e3", type: "normal" },
+        { key: "e4", type: "normal" },
+        { key: "e5", type: "normal" },
+        { key: "e6", type: "normal" },
+        { key: "e7", type: "normal" },
+        { key: "e8", type: "normal" },
+        { key: "e9", type: "normal" }
+      ],
+      agreeableness: [
+        { key: "a1", type: "normal" },
+        { key: "a2", type: "inverse" },
+        { key: "a3", type: "normal" },
+        { key: "a4", type: "normal" },
+        { key: "a5", type: "normal" },
+        { key: "a6", type: "normal" },
+        { key: "a7", type: "normal" },
+        { key: "a8", type: "normal" },
+        { key: "a9", type: "normal" }
+      ],
+      neuroticism: [
+        { key: "n1", type: "inverse" },
+        { key: "n2", type: "normal" },
+        { key: "n3", type: "normal" },
+        { key: "n4", type: "normal" },
+        { key: "n5", type: "normal" },
+        { key: "n6", type: "normal" },
+        { key: "n7", type: "normal" },
+        { key: "n8", type: "normal" },
+        { key: "n9", type: "normal" }
+      ]
+    };
+
+    /* Expand Questions translations for 7 languages (EN, PT, ES, IT, FR, DE, TR) */
+    const questionsTranslations = {
+      // Openness
+      o1: {
+        en: "I enjoy dissecting complex theories and understanding the 'why', even without immediate practical use.",
+        pt: "Gosto de destrinchar teorias complexas e entender os porquês, mesmo sem aplicação prática imediata.",
+        es: "Me gusta analizar teorías complejas y entender los porqués, incluso sin aplicación práctica inmediata.",
+        it: "Mi piace sviscerare teorie complesse e capirne i motivi, anche senza un'applicazione pratica immediata.",
+        fr: "J'aime décortiquer des théories complexes et comprendre les 'pourquoi', même sans application pratique immédiate.",
+        de: "Ich mag es, komplexe Theorien zu zerlegen und das 'Warum' zu verstehen, auch ohne unmittelbaren praktischen Nutzen.",
+        tr: "Pratik bir uygulaması olmasa bile karmaşık teorileri incelemeyi ve nedenlerini anlamayı severim."
+      },
+      o2: {
+        en: "I feel a strong need for originality in my creations and projects, avoiding literal copies.",
+        pt: "Sinto forte necessidade de originalidade nas minhas criações e projetos, evitando cópias literais.",
+        es: "Siento una fuerte necesidad de originalidad en mis creaciones y proyectos, evitando copias lieterales.",
+        it: "Sento un forte bisogno di originalità nelle mie creazioni e nei miei progetti, evitando copie letterali.",
+        fr: "Je ressens un fort besoin d'originalité dans mes créations et projets, en évitant les copies littérales.",
+        de: "Ich spüre ein starkes Bedürfnis nach Originalität in meinen Kreationen und Projekten und vermeide bloße Kopien.",
+        tr: "Projelerimde ve üretimlerimde özgün olmaya güçlü bir ihtiyaç duyar, birebir kopyalardan kaçınırım."
+      },
+      o3: {
+        en: "I prefer trying exotic variations and new approaches over following a tested, safe pattern.",
+        pt: "Prefiro experimentar variações exóticas e novas abordagens a seguir um padrão testado e seguro.",
+        es: "Prefiro probar variaciones exóticas y nuevos enfoques antes que seguir un patrón probado y seguro.",
+        it: "Preferisco sperimentare varianti esotiche e nuovi approcci piuttosto che seguire uno schema collaudato e sicuro.",
+        fr: "Je préfère expérimenter des variations exotiques et de nouvelles approches plutôt que de suivre un modèle testé et sûr.",
+        de: "Ich experimentiere lieber mit exotischen Varianten und neuen Ansätzen, als einem bewährten und sicheren Muster zu folgen.",
+        tr: "Test edilmiş ve güvenli bir yolu izlemek yerine, egzotik varyasyonlar ve yeni yaklaşımlar denemeyi tercih ederim."
+      },
+      o4: {
+        en: "When traveling, I prefer getting lost in unfamiliar streets and discovering local restaurants without checking online reviews.",
+        pt: "Quando viajo, prefiro me perder em ruas desconhecidas e descobrir restaurantes locais sem olhar avaliações online.",
+        es: "Quando viajo, prefiro me perder por calles desconocidas y descubrir restaurantes locales sin mirar reseñas en línea.",
+        it: "Quando viaggio, preferisco perdermi tra strade sconosciute e scoprire ristoranti locali senza guardare le recensioni online.",
+        fr: "En voyage, je préfère me perdre dans des rues inconnues et découvrir des restaurants locaux sans consulter les avis en ligne.",
+        de: "Auf Reisen verirre ich mich lieber in unbekannten Straßen und entdecke lokale Restaurants, ohne Online-Bewertungen zu lesen.",
+        tr: "Seyahat ederken, internetteki yorumlara bakmadan bilmediğim sokaklarda kaybolmayı ve yerel restoranlar keşfetmeyi tercih ederim."
+      },
+      o5: {
+        en: "I prefer watching experimental films or reading books with open and ambiguous endings over predictable stories.",
+        pt: "Prefiro assistir a filmes experimentais ou ler livros com finais abertos e ambíguos do que histórias previsíveis.",
+        es: "Prefiro ver películas experimentales o leer libros con finales abiertos y ambiguos que historias previsibles.",
+        it: "Preferisco guardare film elettronici o leggere libri con finali aperti e ambigui piuttosto che storie prevedibili.",
+        fr: "Je préfère regarder des films expérimentaux ou lire des livres avec des fins ouvertes et ambiguës plutôt que des histoires prévisibles.",
+        de: "Ich schaue mir lieber experimentelle Filme an oder lese Bücher mit offenem, mehrdeutigen Ende als vorhersehbare Geschichten.",
+        tr: "Öngörülebilir hikayeler yerine deneysel filmler izlemeyi veya sonu açık ve belirsiz kitaplar okumayı tercih ederim."
+      },
+      o6: {
+        en: "I often get interested in subjects completely outside my field of work just out of curiosity to understand how they work.",
+        pt: "Costumo me interessar por assuntos completamente fora da minha área de atuação só pela curiosidade de entender como funcionam.",
+        es: "Suelo interesarme por temas completamente ajenos a mi profesión solo por la curiosidad de entender cómo funcionan.",
+        it: "Spesso mi interesso a materie completamente estranee al mio campo di lavoro solo per la curiosità di capire come funzionano.",
+        fr: "Je m'intéresse souvent à des sujets complètement en dehors de mon domaine professionnel par simple curiosité de comprendre leur fonctionnement.",
+        de: "Ich interessiere mich oft für Themen weit außerhalb meines Berufsfeldes, nur aus Neugierde, wie sie funktionieren.",
+        tr: "Sırf nasıl çalıştıklarını merak ettiğim için mesleğimin tamamen dışındaki konularla sık sık ilgilenirim."
+      },
+      o7: {
+        en: "I like rearranging my home furniture or testing exotic recipes just to break the visual routine.",
+        pt: "Gosto de mudar a disposição dos móveis da minha casa ou testar receitas exóticas só para quebrar a rotina visual.",
+        es: "Me gusta cambiar la disposición de los muebles de mi casa o probar recetas exóticas solo para romper la rutina visual.",
+        it: "Mi piace cambiare la disposizione dei mobili in casa o provare ricette esotiche solo per rompere la routine visiva.",
+        fr: "J'aime changer la disposition des meubles de ma maison ou tester des recettes exotiques juste pour rompre la routine visuelle.",
+        de: "Ich mag es, die Möbel in meiner Wohnung umzustellen oder exotische Rezepte auszuprobieren, nur um die visuelle Routine zu brechen.",
+        tr: "Sırf görsel rutini kırmak için evimdeki mobilyaların yerini değiştirmeyi veya egzotik tarifler denemeyi severim."
+      },
+      o8: {
+        en: "In everyday conversations, I find pleasure in discussing futuristic scenarios and absurd hypotheses about society.",
+        pt: "Em conversas cotidianas, sinto prazer em discutir cenários futuristas e hipóteses absurdas sobre a sociedade.",
+        es: "En conversaciones cotidianas, disfruto discutiendo escenarios futuristas e hipótesis absurdas sobre la sociedad.",
+        it: "Nelle conversazioni quotidiane, trovo piacere nel discutere scenari futuristici e ipotesi assurde sulla società.",
+        fr: "Dans les conversations quotidiennes, je prends plaisir à discuter de scénarios futuristes et d'hypothèses absurdes sur la société.",
+        de: "In alltäglichen Gesprächen diskutiere ich gerne über futuristische Szenarien und absurde Hypothesen über die Gesellschaft.",
+        tr: "Günlük sohbetlerde topluma dair fütüristik senaryoları ve sıra dışı hipotezleri tartışmaktan keyif alırım."
+      },
+      o9: {
+        en: "I am always looking for new musical genres and independent bands, quickly getting tired of playing what is on commercial radio.",
+        pt: "Estou sempre buscando novos gêneros musicais e bandas independentes, enjoando rápido do que toca nas rádios comerciais.",
+        es: "Siempre buco nuevos géneros musicales y bandas independientes, aburriéndome rápido de lo que suena en las radios comerciales.",
+        it: "Cerco sempre nuovi generi musicali e band indipendenti, stancandomi rapidamente di ciò che passa sulle radio commerciali.",
+        fr: "Je suis toujours à la recherche de nouveaux genres musicaux et de groupes indépendants, me lassant rapidement de ce qui passe à la radio.",
+        de: "Ich bin immer auf der Suche nach neuen Musikgenres und Indie-Bands, und langweile mich schnell bei dem, was im Radio läuft.",
+        tr: "Her zaman yeni müzik türleri ve bağımsız gruplar ararım, ticari radyolarda çalınanlardan çabuk sıkılırım."
+      },
+      
+      // Conscientiousness
+      c1: {
+        en: "I keep my files, setups, and daily plans meticulously structured and clean.",
+        pt: "Mantenho meus arquivos, setups e planos diários meticulosamente estruturados e limpos.",
+        es: "Mantengo mis archivos, configuraciones y planes diarios meticulosamente estructurados y limpios.",
+        it: "Mantengo i miei file, le mie impostazioni e i miei piani giornalieri meticolosamente strutturati e puliti.",
+        fr: "Je garde mes fichiers, mes configurations et mes plans quotidiens méticuleusement structurés et propres.",
+        de: "Ich halte meine Dateien, Setups und täglichen Pläne akribisch strukturiert und sauber.",
+        tr: "Dosyalarımı, çalışma alanımı ve günlük planlarımı titizlikle yapılandırılmış ve düzenli tutarım."
+      },
+      c2: {
+        en: "If I set a goal (like a training routine or technical focus), I follow through with high self-discipline.",
+        pt: "Se estabeleço um objetivo (como uma rotina de treinos ou foco técnico), sigo até o fim com alta autodisciplina.",
+        es: "Si me propongo un objetivo (como una rutina de ejercicios o enfoque técnico), lo cumplo com alta autodisciplina.",
+        it: "Se mi prefiggo un obiettivo (come una routine di allenamento o un focus tecnico), lo seguo con alta autodisciplina.",
+        fr: "Si je me fixe un objectif (comme une routine d'entraînement ou un focus technique), je le poursuis avec une grande autodiscipline.",
+        de: "Wenn ich mir ein Ziel setze (wie ein Trainingsprogramm oder einen fachlichen Fokus), ziehe ich es mit hoher Selbstdisziplin durch.",
+        tr: "Bir hedef belirlediğimde (spor rutini veya teknik odaklanma gibi), yüksek öz disiplinle sonuna kadar takip ederim."
+      },
+      c3: {
+        en: "Before making an important decision, I coldly analyze available resources and discard what doesn't work.",
+        pt: "Antes de tomar uma decisão importante, analiso friamente os recursos disponíveis e descarto o que não serve.",
+        es: "Antes de tomar una decisión importante, analizo fríamente los recursos disponíveis y descarto lo que no sirve.",
+        it: "Prima di prendere una decisione importante, analizzo freddamente le risorse disponibili e scarto ciò che non serve.",
+        fr: "Avant de prendre une décision importante, j'analyse froidement les ressources disponibles et rejette ce qui ne sert à rien.",
+        de: "Vor einer wichtigen Entscheidung analysiere ich nüchtern die verfügbaren Ressourcen und sortiere Unnötiges aus.",
+        tr: "Önemli bir karar vermeden önce mevcut kaynakları soğukkanlılıkla analiz eder ve işe yaramayanları elerim."
+      },
+      c4: {
+        en: "Even on leisure trips, I like to create a detailed itinerary and have pre-defined times for each activity.",
+        pt: "Mesmo em viagens de lazer, gosto de montar um itinerário detalhado e ter horários definidos para as atividades.",
+        es: "Incluso en viajes de placer, me gusta armar un itinerario detallado y tener horarios definidos para las actividades.",
+        it: "Anche nei viaggi di piacere, mi piace creare un itinerario dettagliato e stabilire orari definiti per le attività.",
+        fr: "Même pour les voyages de loisirs, j'aime établir un itinéraire détaillé et avoir des horaires définis pour les activités.",
+        de: "Selbst bei Urlaubsreisen erstelle ich gerne eine detaillierte Reiseroute und habe feste Zeiten für Aktivitäten.",
+        tr: "Tatil seyahatlerinde bile detaylı bir rota hazırlamayı ve aktiviteler için belirlenmiş saatlere sahip olmayı severim."
+      },
+      c5: {
+        en: "I prefer to deliver a project days before the deadline with triple review rather than finish it at the last minute relying on improvisation.",
+        pt: "Prefiro entregar um projeto dias antes do prazo com revisão tripla do que terminá-lo no limite confiando no improviso.",
+        es: "Prefiro entregar un proyecto días antes del plazo con triple revisión que terminarlo al límite confiando en la improvisación.",
+        it: "Preferisco consegnare un progetto giorni prima della scadenza con una tripla revisione piuttosto che finirlo all'ultimo fidandomi dell'improvvisazione.",
+        fr: "Je préfère livrer un projet quelques jours avant la date limite avec une triple révision plutôt que de le terminer au dernier moment en comptant sur l'improvisation.",
+        de: "Ich liefere ein Projekt lieber Tage vor dem Abgabetermin mit dreifacher Prüfung ab, als es im letzten Moment durch Improvisation fertigzustellen.",
+        tr: "Bir projeyi doğaçlamaya güvenip son dakikada bitirmektense, günler önce üç kez kontrol ederek teslim etmeyi tercih ederim."
+      },
+      c6: {
+        en: "I track my monthly expenses in a spreadsheet or app and rarely buy something on impulse without researching first.",
+        pt: "Controlo meus gastos mensais em planilhas ou aplicativos e raramente compro algo por impulso sem pesquisar antes.",
+        es: "Controlo mis gastos mensuales en hojas de cálculo o aplicaciones y rara vez compro algo por impulso sin investigar antes.",
+        it: "Tengo traccia delle mie spese mensili in fogli di calcolo o app e raramente acquisto qualcosa d'impulso senza prima fare ricerche.",
+        fr: "Je contrôle mes dépenses mensuelles sur des feuilles de calcul ou des applications et j'achète rarement par impulsion sans faire de recherches préalables.",
+        de: "Ich kontrolliere meine monatlichen Ausgaben in Tabellen oder Apps und kaufe selten spontan etwas, ohne vorher zu recherchieren.",
+        tr: "Aylık harcamalarımı tablolarda veya uygulamalarda takip eder, önceden araştırmadan nadiren dürtüsel alışveriş yaparım."
+      },
+      c7: {
+        en: "I cannot relax on the weekend if there are domestic chores pending or dishes piled up in the sink.",
+        pt: "Não consigo relaxar de verdade no final de semana se houver pendências domésticas ou louça acumulada na pia.",
+        es: "No puedo relajarme de verdad el fin de semana si hay tareas domésticas pendientes o platos acumulados en el fregadero.",
+        it: "Non riesco a rilassarmi davvero nel fine settimana se ci sono faccende domestiche in sospeso o piatti accumulati nel lavandino.",
+        fr: "Je ne peux pas vraiment me détendre le week-end s'il y a des tâches ménagères en attente ou de la vaisselle accumulée dans l'évier.",
+        de: "Ich kann mich am Wochenende nicht wirklich entspannen, wenn im Haushalt noch Aufgaben anstehen oder sich Geschirr in der Spüle stapelt.",
+        tr: "Ev işleri birikmişse veya lavaboda bulaşık duruyorsa hafta sonu gerçekten rahat edemem."
+      },
+      c8: {
+        en: "I consider it disrespectful to arrive late for appointments and plan my departure allowing margins for traffic.",
+        pt: "Considero um desrespeito chegar atrasado a compromissos e planejo minha saída prevendo margens para o trânsito.",
+        es: "Considero una falta de respeto llegar tarde a las citas y planifico mi salida previendo márgenes para el tráfico.",
+        it: "Considero una mancanza di rispetto arrivare in ritardo agli appuntamenti e pianifico la mia partenza prevedendo margini per il traffico.",
+        fr: "Je considère comme un manque de respect d'arriver en retard aux rendez-vous et je planifie mon départ en prévoyant des marges pour le trafic.",
+        de: "Ich halte es für respektlos, zu spät zu Terminen zu kommen, und plane meine Abfahrtszeit mit Puffer für den Verkehr.",
+        tr: "Randevulara geç kalmayı saygısızlık olarak görür ve trafiği hesaba katarak yola çıkışımı planlarım."
+      },
+      c9: {
+        en: "When buying a new appliance or software, I read the instruction manual before starting to use it.",
+        pt: "Ao comprar um eletrodoméstico ou software novo, leio o manual de instruções antes de começar a usá-lo.",
+        es: "Al comprar un electrodoméstico o software nuevo, leo el manual de instrucciones antes de empezar a usarlo.",
+        it: "Quando acquisto un nuovo elettrodomestico o software, leggo il manuale di istruzioni prima di iniziare a usarlo.",
+        fr: "Lors de l'achat d'un nouvel appareil ou logiciel, je lis le manuel d'instructions avant de commencer à l'utiliser.",
+        de: "Beim Kauf eines neuen Geräts oder einer neuen Software lese ich die Bedienungsanleitung, bevor ich sie benutze.",
+        tr: "Yeni bir cihaz veya yazılım satın aldığımda, kullanmaya başlamadan önce kullanım kılavuzunu okurum."
+      },
+      
+      // Extraversion
+      e1: {
+        en: "In intense social environments or dealing heavily with the public, I feel my energy drain quickly.",
+        pt: "Em ambientes sociais intensos ou lidando muito com o público, sinto minha energia ser drenada rapidamente.",
+        es: "En entornos sociales intensos o al tratar mucho con el público, siento que mi energía se agota rápidamente.",
+        it: "In contesti sociali intensi o interagendo molto con il pubblico, sento che le mie energie si esauriscono rapidamente.",
+        fr: "Dans des environnements sociaux intenses ou en contact permanent avec le public, je sens mon énergie se vider rapidement.",
+        de: "In intensiven sozialen Umgebungen oder im ständigen Kontakt mit Kunden spüre ich, wie meine Energie schnell nachlässt.",
+        tr: "Yoğun sosyal ortamlarda veya halkla çok fazla muhatap olduğumda, enerjimin hızla tükendiğini hissederim."
+      },
+      e2: {
+        en: "In discussions or group projects, I feel comfortable taking charge and directing the path.",
+        pt: "Em discussões ou projetos em grupo, sinto-me confortável em assumir o comando e direcionar o caminho.",
+        es: "En discusiones o proyectos grupales, me siento cómodo tomando el mando yiniendo el camino.",
+        it: "Nelle discussioni o nei progetti di gruppo, mi sento a mio agio nel prendere il comando e indirizzare il percorso.",
+        fr: "Dans les discussions ou les projets de groupe, je me sens à l'aise pour prendre les commandes et diriger.",
+        de: "In Diskussionen oder Gruppenprojekten fühle ich mich wohl dabei, die Führung zu übernehmen und den Weg vorzugeben.",
+        tr: "Tartışmalarda veya grup projelerinde liderliği üstlenmekten ve yön vermekten rahatlık duyarım."
+      },
+      e3: {
+        en: "I prefer dynamic routines and bustling environments over spending long periods in absolute silence.",
+        pt: "Prefiro rotinas dinâmicas e ambientes movimentados a passar longos períodos em silêncio absoluto.",
+        es: "Prefiro rutinas dinámicas y entornos animados a pasar largos períodos en silencio absoluto.",
+        it: "Preferisco routine dinamiche e ambienti vivaci piuttosto che passare lunghi periodi in assoluto silenzio.",
+        fr: "Je préfère les routines dynamiques et les environnements animés plutôt que de passer de longues périodes dans un silence absolu.",
+        de: "Ich bevorzuge dynamische Abläufe und lebhafte Umgebungen gegenüber langen Phasen absoluter Stille.",
+        tr: "Mutlak sessizlik içinde uzun süreler geçirmektense, dinamik rutinleri ve hareketli ortamları tercih ederim."
+      },
+      e4: {
+        en: "After a stressful day at work, the best way to relax is to meet friends in a busy bar or café.",
+        pt: "Depois de um dia estressante de trabalho, a melhor forma de relaxar é encontrar amigos em um bar ou café movimentado.",
+        es: "Depois de un día estresante de trabajo, la mejor manera de relajarme es reunirme con amigos en un bar o café concurrido.",
+        it: "Dopo una giornata di lavoro stressante, il modo migliore per rilassarmi è incontrare gli amici in un bar o in un caffè affollato.",
+        fr: "Après une journée de travail stressante, le meilleur moyen de me détendre est de retrouver des amis dans un bar ou un café animé.",
+        de: "Nach einem stressigen Arbeitstag entspanne ich mich am besten, indem ich Freunde in einer belebten Bar oder einem Café treffe.",
+        tr: "Stresli bir iş gününün ardından rahatlamanın en iyi yolu, hareketli bir bar veya kafede arkadaşlarla buluşmaktır."
+      },
+      e5: {
+        en: "I am usually the first to start a conversation in elevators, lines, or when introduced to new people.",
+        pt: "Geralmente sou o primeiro a puxar assunto em elevadores, filas ou quando sou apresentado a pessoas novas.",
+        es: "Suelo ser el primero en iniciar una conversación en ascensores, filas o al ser presentado a personas nuevas.",
+        it: "Di lavoro sono il primo a iniziare una conversazione in ascensore, in fila o quando vengo presentato a persone nuove.",
+        fr: "Je suis généralement le premier à engager la conversation dans les ascenseurs, les files d'attente ou lorsqu'on me présente de nouvelles personnes.",
+        de: "Ich bin meist der Erste, der im Aufzug, in Warteschlangen oder bei der Vorstellung neuer Personen ein Gespräch beginnt.",
+        tr: "Asansörlerde, kuyruklarda veya yeni insanlarla tanıştırıldığımda genellikle sohbeti başlatan ilk kişi ben olurum."
+      },
+      e6: {
+        en: "I think better and feel more productive discussing ideas in a group than thinking alone in my corner.",
+        pt: "Raciocino melhor e me sinto mais produtivo debatendo ideias em grupo do que pensando sozinho no meu canto.",
+        es: "Pienso mejor y me siento más productivo debatiendo ideas en grupo que pensando solo en mi rincón.",
+        it: "Penso meglio e mi sento più produttivo discutendo le idee in gruppo piuttosto che pensando da solo nel mio angolo.",
+        fr: "Je réfléchis mieux et me sens plus productif en débattant d'idées en groupe plutôt qu'en pensant seul dans mon coin.",
+        de: "Ich kann besser denken und fühle mich produktiver, wenn ich Ideen in der Gruppe bespreche, anstatt alleine in meiner Ecke nachzudenken.",
+        tr: "Kendi köşemde tek başıma düşünmektense, fikirleri grup halinde tartışırken daha iyi düşünür ve daha üretken hissederim."
+      },
+      e7: {
+        en: "If I spend a whole weekend at home without interacting with anyone outside, I feel bored and discouraged.",
+        pt: "Se passo um final de semana inteiro em casa sem interagir com ninguém de fora, sinto-me entediado e desanimado.",
+        es: "Si paso un fin de semana entero en casa sin interactuar con nadie externo, me siento aburrido y desanimado.",
+        it: "Se passo un intero fine settimana a casa senza interagire con nessuno all'esterno, mi sento annoiato e scoraggiato.",
+        fr: "Si je passe tout un week-end à la maison sans interaction sociale, je me sens rapidement ennuyé et découragé.",
+        de: "Wenn ich ein ganzes Wochenende zu Hause verbringe, ohne mit jemandem zu interagieren, fühle ich mich gelangweilt und antriebslos.",
+        tr: "Bütün bir hafta sonunu dışarıdan kimseyle etkileşime girmeden evde geçirirsem, sıkılmış ve keyifsiz hissederim."
+      },
+      e8: {
+        en: "I like being the center of attention at celebrations and feel comfortable making presentations.",
+        pt: "Gosto de ser o centro das atenções em comemorações e me sinto confortável fazendo apresentações.",
+        es: "Me gusta ser el centro de atención en las celebraciones y me siento cómodo haciendo presentaciones.",
+        it: "Mi piace essere al centro dell'attenzione durante le celebrazioni e mi sento a mio agio nel fare presentazioni.",
+        fr: "J'aime être le centre d'attention lors des célébrations et je me sens à l'aise pour faire des présentations.",
+        de: "Ich stehe bei Feiern gerne im Mittelpunkt der Aufmerksamkeit und fühle mich bei Präsentationen wohl.",
+        tr: "Kutlamalarda ilgi odağı olmayı severim ve sunum yaparken kendimi rahat hissederim."
+      },
+      e9: {
+        en: "I usually show my enthusiasm expressively and speak in a lively tone of voice that infects people.",
+        pt: "Costumo demonstrar meu entusiasmo de forma expressiva e falar em um tom de voz animado que contagia as pessoas.",
+        es: "Suelo mostrar mi entusiasmo de forma expresiva y hablar en un tono de voz animado que contagia a la gente.",
+        it: "Tendo a mostrare il mio entusiasmo in modo espressivo e a parlare con un tono di voce vivace che contagia le persone.",
+        fr: "J'ai tendance à montrer mon enthousiasme de manière très expressive et à parler sur un ton enjoué qui motive les autres.",
+        de: "Ich zeige meine Begeisterung oft sehr ausdrucksstark und spreche in einem lebhaften Ton, der andere ansteckt.",
+        tr: "Coşkumu genellikle dışa vurarak gösteririm ve insanlara bulaşan canlı bir ses tonuyla konuşurum."
+      },
+      
+      // Agreeableness
+      a1: {
+        en: "I usually compromise or seek team harmony, even if my initial idea was slightly different.",
+        pt: "Costumo ceder ou buscar a harmonia em equipe, mesmo que minha ideia inicial fosse ligeiramente diferente.",
+        es: "Suelo ceder o buscar la armonía en equipo, incluso si mi idea inicial era ligeramente diferente.",
+        it: "Tendo a cedere o a cercare l'armonia nel gruppo, anche se la mia idea iniziale era leggermente diversa.",
+        fr: "J'ai tendance à céder ou à rechercher l'harmonie en équipe, même si mon idée initiale était légèrement différente.",
+        de: "Ich gebe oft nach oder suche die Harmonie im Team, selbst wenn meine ursprüngliche Idee etwas anders war.",
+        tr: "İlk fikrim biraz farklı olsa bile, genellikle ekibin uyumu için taviz verir veya orta yolu ararım."
+      },
+      a2: {
+        en: "I prioritize raw truth and logical efficiency, even if I need to be firm or skeptical with people.",
+        pt: "Priorizo a verdade nua e crua e a eficiência lógica, mesmo que precise ser firme ou cético com as pessoas.",
+        es: "Priorizo la verdad pura y la eficiencia lógica, aunque tenga que ser firme o escéptico con las personas.",
+        it: "Do la priorità alla nuda verità e all'efficienza logica, anche se devo essere fermo o scettico con le persone.",
+        fr: "Je privilégie la vérité brute et l'efficacité logique, même si je dois me montrer ferme ou sceptique avec les gens.",
+        de: "Ich bevorzuge die nackte Wahrheit und logische Effizienz, selbst wenn ich anderen gegenüber streng oder skeptisch sein muss.",
+        tr: "İnsanlara karşı sert veya şüpheci davranmam gerekse bile, doğrudan gerçeğe ve mantıksal verimliliğe öncelik veririm."
+      },
+      a3: {
+        en: "I tend to believe that people have good professional intentions until proven otherwise.",
+        pt: "Tendo a acreditar que as pessoas têm boas intenções profissionais até que me provem o contrário.",
+        es: "Tiendo a creer que las personas tienen buenas intenciones profesionales hasta que demuestren lo contrario.",
+        it: "Tendo a credere che le persone abbiano buone intenzioni professionali finché non viene dimostrato il contrario.",
+        fr: "J'ai tendance à croire que les gens ont de bonnes intentions professionnelles jusqu'à preuve du contraire.",
+        de: "Ich nehme tendenziell an, dass Menschen gute berufliche Absichten haben, bis das Gegenteil beweisen ist.",
+        tr: "Aksini gösteren bir durum olana kadar, insanların iş ortamında iyi niyetli olduğuna inanma eğilimindeyimdir."
+      },
+      a4: {
+        en: "I often willingly pause my own tasks to help a coworker who seems overwhelmed.",
+        pt: "Costumo pausar minhas próprias tarefas de bom grado para ajudar um colega de trabalho que parece estar sobrecarregado.",
+        es: "Suelo pausar mis próprias tareas con gusto para ajudar a un compañero de trabajo que parece sobrecargado.",
+        it: "Spesso interrompo volentieri i miei compiti per aiutare un collega di lavoro che sembra sovraccarico.",
+        fr: "J'interromps volontiers mes propres tâches pour aider un collègue qui semble surchargé de travail.",
+        de: "Ich unterbreche gerne meine eigenen Aufgaben, um einem Kollegen zu helfen, der überlastet wirkt.",
+        tr: "Aşırı yüklenmiş görünen bir meslektaşıma yardım etmek için kendi işlerimi memnuniyetle yarıda keserim."
+      },
+      a5: {
+        en: "I avoid heated arguments on social media or direct confrontations, preferring to overlook criticism in the name of peace.",
+        pt: "Evito discussões calorosas nas redes sociais ou confrontos diretos, preferindo relevar críticas em nome da paz.",
+        es: "Evito discusiones acaloradas en redes sociales o confrontaciones directas, prefiriendo ignorar las críticas en aras de la paz.",
+        it: "Evito discussioni accese sui social network o confronti diretti, preferendo sorvolare sulle critiche in nome della pace.",
+        fr: "J'évite les disputes animées sur les réseaux sociaux ou les confrontations directes, préférant ignorer les critiques pour préserver la paix.",
+        de: "Ich vermeide hitzige Diskussionen in sozialen Medien oder direkte Konfrontationen und übersehe Kritik lieber um des Friedens willen.",
+        tr: "Sosyal medyadaki ateşli tartışmalardan veya doğrudan çatışmalardan kaçınır, barış adına eleştirileri görmezden gelmeyi tercih ederim."
+      },
+      a6: {
+        en: "Friends often come to me to vent because they know I will listen with patience and without judgment.",
+        pt: "Amigos costumam me procurar para desabafar porque sabem que vou ouvi-los com paciência e sem julgamentos.",
+        es: "Mis amigos suelen buscarme para desahogarse porque saben que los escucharé con paciencia y sin juzgarlos.",
+        it: "Gli amici spesso si rivolgono a me per sfogarsi perché sanno che li ascolterò con pazienza e senza giudicare.",
+        fr: "Mes amis viennent souvent se confier à moi parce qu'ils savent que je les écouterai avec patience et sans jugement.",
+        de: "Freunde kommen oft zu mir, um sich auszusprechen, weil sie wissen, dass ich geduldig und ohne Vorurteile zuhöre.",
+        tr: "Arkadaşlarım dertleşmek için sık sık bana gelirler çünkü onları sabırla ve yargılamadan dinleyeceğimi bilirler."
+      },
+      a7: {
+        en: "I am genuinely touched by social causes and often collaborate with donations or volunteer work whenever I can.",
+        pt: "Fico genuinamente tocado por causas sociais e costumo colaborar com doações ou trabalho voluntário sempre que posso.",
+        es: "Me conmueven genuinamente las causas sociales y suelo colaborar con donaciones o voluntariado siempre que puedo.",
+        it: "Sono sinceramente toccato dalle cause sociali e tendo a collaborare con donazioni o volontariato ogni volta che posso.",
+        fr: "Je suis sincèrement touché par les causes sociales et je collabore souvent par des dons ou du bénévolat dès que je le peux.",
+        de: "Soziale Anliegen berühren mich sehr und ich helfe oft mit Spenden oder ehrenamtlicher Arbeit, wann immer ich kann.",
+        tr: "Sosyal sorumluluk projelerinden içtenlikle etkilenir ve elimden geldiğince bağış veya gönüllü çalışmalarla katkıda bulunurum."
+      },
+      a8: {
+        en: "I can forgive past hurts or misunderstandings easily, preferring to restore ties rather than hold grudges.",
+        pt: "Consigo perdoar mágoas ou desentendimentos passados com facilidade, preferindo reatar laços a guardar ressentimentos.",
+        es: "Puedo perdonar ofensas o malentendidos pasados con facilidad, prefiriendo restablecer lazos que guardar rencor.",
+        it: "Riesco a perdonare facilmente offese o incomprensioni passate, preferendo riallacciare i rapporti piuttosto che portare rancore.",
+        fr: "Je peux facilement pardonner les blessures ou les malentendus passés, préférant renouer les liens plutôt que de garder rancune.",
+        de: "Ich kann vergangene Kränkungen oder Missverständnisse leicht vergeben und baue lieber Brücken, als Groll zu hegen.",
+        tr: "Geçmişteki kırgınlıkları veya yanlış anlaşılmaları kolayca affebilir, kin tutmak yerine bağları yeniden kurmayı tercih ederim."
+      },
+      a9: {
+        en: "I usually notice people's efforts and praise small details of their work or appearance to make them feel good.",
+        pt: "Costumo notar o esforço das pessoas e elogiar pequenos detalhes do trabalho ou visual delas para fazê-las se sentirem bem.",
+        es: "Suelo notar el esfuerzo de las personas y elogiar pequeños detalles de su trabajo o aspecto para hacerlas sentir bien.",
+        it: "Tendo a notare l'impegno delle persone e a elogiare piccoli dettagli del loro lavoro o del loro aspetto per farle sentire bene.",
+        fr: "J'ai l'habitude de remarquer les efforts des gens et de complimenter les petits détails de leur travail ou de leur apparence pour qu'ils se sentent bien.",
+        de: "Ich bemerke oft die Bemühungen anderer und lobe kleine Details ihrer Arbeit oder ihres Aussehens, damit sie sich wohlfühlen.",
+        tr: "İnsanların çabalarını fark etme ve kendilerini iyi hissetmeleri için işlerindeki veya görünümlerindeki küçük ayrıntıları övme eğilimindeyimdir."
+      },
+      
+      // Neuroticism
+      n1: {
+        en: "In the face of unexpected events and sudden chaos, I can pivot quickly without letting stress change my mood.",
+        pt: "Diante de imprevistos e caos repentinos, consigo virar a chave rápido sem deixar o estresse mudar meu humor.",
+        es: "Ante imprevistos y caos repentino, puedo adaptarme rápido sin dejar que el estrés cambie mi estado de ánimo.",
+        it: "Di fronte a imprevisti e caos improvviso, riesco a riprendermi rapidamente senza lasciare che lo stress influenzi il mio umore.",
+        fr: "Face aux imprévus et au chaos soudain, je peux pivoter rapidement sans laisser le stress modifier mon humeur.",
+        de: "Bei unvorhergesehenen Ereignissen und plötzlichem Chaos kann ich mich schnell anpassen, ohne dass Stress meine Stimmung trübt.",
+        tr: "Beklenmedik durumlar ve ani karmaşalar karşısında, stresin ruh halimi değiştirmesine izin vermeden hızla yönümü değiştirebilirim."
+      },
+      n2: {
+        en: "I tend to ruminate on small daily mistakes and push myself excessively for perfection.",
+        pt: "Costumo remoer pequenos erros do dia a dia e me cobro excessivamente pela perfeição.",
+        es: "Suelo dar vueltas a pequeños errores cotidianos y me exijo excesivamente la perfección.",
+        it: "Tendo a rimuginare su piccoli errori quotidiani e mi impongo standard di perfezione eccessivi.",
+        fr: "J'ai tendance à ressasser les petites erreurs du quotidien et je m'impose une exigence de perfection excessive.",
+        de: "Ich nehme mir kleine Fehler im Alltag oft sehr zu Herzen und verlange von mir selbst übermäßige Perfektion.",
+        tr: "Günlük hayattaki küçük hataları kafama takma eğilimindeyimdir ve kendimden aşırı derecede mükemmellik beklerim."
+      },
+      n3: {
+        en: "Abrupt changes in scenarios or rules at work generate noticeable anxiety before I can act.",
+        pt: "Mudanças abruptas de cenário ou regras no trabalho me geram uma ansiedade perceptível antes de eu agir.",
+        es: "Los cambios abruptos de escenario o reglas en el trabajo me generan una ansiedad perceptible antes de actuar.",
+        it: "I cambiamenti improvvisi di scenario o di regole sul lavoro mi generano un'ansia evidente prima di agire.",
+        fr: "Les changements brusques de scénario ou de règles au travail me génèrent une anxiété notable avant que je puisse agir.",
+        de: "Abrupte Änderungen von Abläufen oder Regeln bei der Arbeit bereiten mir spürbare Sorgen, bevor ich handle.",
+        tr: "İş yerindeki ani kural veya ortam değişiklikleri, ben harekete geçmeden önce bende belirgin bir kaygı yaratır."
+      },
+      n4: {
+        en: "I often find it hard to fall asleep because my mind keeps reviewing worries of future problems.",
+        pt: "Muitas vezes sinto dificuldades para adormecer porque minha mente fica repassando preocupações de problemas futuros.",
+        es: "A menudo me cuesta dormir porque mi mente sigue dando vueltas a preocupaciones sobre problemas futuros.",
+        it: "Spesso ho difficoltà ad addormentarmi perché la mia mente continua a ripassare preoccupazioni su problemi futuri.",
+        fr: "J'ai souvent du mal à m'endormir parce que mon esprit passe en revue les inquiétudes concernant des problèmes futurs.",
+        de: "Ich habe oft Einschlafprobleme, weil mein Gehirn ständig über Sorgen wegen zukünftiger Probleme grübelt.",
+        tr: "Zihnim gelecekteki sorunlara dair endişeleri sürekli tekrarladığı için sık sık uykuya dalmakta zorlanırım."
+      },
+      n5: {
+        en: "Receiving negative professional feedback ruins my mood for the rest of the day, even if it was constructive.",
+        pt: "Receber uma crítica profissional negativa estraga o meu humor pelo resto do dia, mesmo que tenha sido construtiva.",
+        es: "Recibir críticas profesionales negativas me estropea el humor el resto del día, aunque hayan sido constructivas.",
+        it: "Ricevere critiche professionali negative mi rovina l'umore per il resto della giornata, anche se costruttive.",
+        fr: "Recevoir une critique professionnelle négative gâche mon humeur pour le reste de la journée, même si elle était constructive.",
+        de: "Eine negative berufliche Rückmeldung ruiniert meine Stimmung für den Rest des Tages, selbst wenn sie konstruktiv war.",
+        tr: "Olumsuz bir profesyonel eleştiri almak, yapıcı olsa bile günün geri kalanında ruh halimi bozar."
+      },
+      n6: {
+        en: "My mood fluctuates easily in response to minor setbacks, such as getting stuck in traffic or misplacing an item.",
+        pt: "Meu humor oscila com facilidade diante de pequenos contratempos, como pegar trânsito ou perder um objeto.",
+        es: "Mi humor cambia fácilmente ante pequeños contratiempos, como quedar atrapado en el tráfico o perder un objeto.",
+        it: "Il mio umore oscilla facilmente di fronte a piccoli contrattempi, come rimanere bloccati nel traffico o perdere un oggetto.",
+        fr: "Mon humeur fluctue facilement face aux petits contretemps, comme être conclu dans les embouteillages ou perdre un objet.",
+        de: "Meine Stimmung schwankt leicht bei kleinen Missgeschicken, wie im Stau zu stehen oder einen Gegenstand zu verlegen.",
+        tr: "Trafikte kalmak veya bir eşyayı kaybetmek gibi küçük aksilikler karşısında ruh halim kolayca dalgalanır."
+      },
+      n7: {
+        en: "I often feel insecure about the image I project in meetings and worry about whether I said something inappropriate.",
+        pt: "Muitas vezes me sinto inseguro sobre a imagem que transmito em reuniões e fico pensando se disse algo inadequado.",
+        es: "A menudo me siento inseguro sobre la imagem que proyecto en las reuniones y me quedo pensando si dije algo inapropiado.",
+        it: "Spesso mi sento insicuro sull'immagine che trasmetto nelle riunioni e mi preoccupo di aver detto qualcosa di inappropriato.",
+        fr: "Je me sens souvent peu sûr de l'image que je projette en réunion et je me demande si j'ai dit quelque chose d'inapproprié.",
+        de: "Ich bin mir oft unsicher über meine Wirkung in Besprechungen und grübele darüber nach, ob ich etwas Unpassendes gesagt habe.",
+        tr: "Toplantılarda bıraktığım izlenim konusunda kendimi sık sık güvensiz hisseder, uygunsuz bir şey söyleyip söylemediğimi düşünür dururum."
+      },
+      n8: {
+        en: "I get excessively anxious while waiting for a reply to an important email or message, checking my phone all the time.",
+        pt: "Fico excessivamente ansioso ao esperar por uma resposta de e-mail ou mensagem importante, checando o celular toda hora.",
+        es: "Me pongo excesivamente ansioso al esperar una respuesta a un correo electrónico o mensaje importante, mirando el móvil a cada rato.",
+        it: "Divento eccessivamente ansioso mentre aspetto una risposta a un'e-mail o a un messaggio importante, controllando continuamente il cellulare.",
+        fr: "Je deviens excessivement anxieux en attendant une réponse à un e-mail ou à un message important, vérifiant mon téléphone à chaque instant.",
+        de: "Ich werde extrem nervös, wenn ich auf eine Antwort auf eine wichtige E-Mail oder Nachricht warte, und schaue ständig aufs Handy.",
+        tr: "Önemli bir e-posta veya mesaja cevap beklerken aşırı derecede kaygılanır, sürekli telefonumu kontrol ederim."
+      },
+      n9: {
+        en: "During weeks of high pressure, I easily experience physical symptoms of stress (like headaches).",
+        pt: "Em semanas de alta pressão, sinto sintomas físicos de estresse (como dores de cabeça) facilmente.",
+        es: "En semanas de alta presión, experimento síntomas físicos de estrés (como dolores de cabeza) con facilidad.",
+        it: "Nelle settimane di forte pressione, accuso facilmente sintomi fisici di stress (come mal di testa).",
+        fr: "Durant les semaines de forte pression, je ressens facilement des symptômes physiques de stress (comme des maux de tête).",
+        de: "In Wochen mit hohem Druck treten bei mir leicht körperliche Stresssymptome (wie Kopfschmerzen) auf.",
+        tr: "Baskının yüksek olduğu haftalarda, baş ağrısı gibi fiziksel stres belirtilerini kolayca yaşarım."
+      }
+    };
+
+    let currentLang = "en";
+    let activeQuestions = [];
+    let userAnswers = Array(15).fill(3);
+    let myChart = null;
+    let candidateName = "";
+
+    function changeLanguage() {
+      currentLang = document.getElementById("lang-select").value;
+      document.documentElement.lang = currentLang;
+      updateInterfaceText();
+      if (document.getElementById("quiz-section").style.display === "block") {
+        renderQuestions();
+      }
+    }
+
+    function updateInterfaceText() {
+      const t = translations[currentLang] || translations["en"];
+      
+      document.getElementById("txt-entry-title").innerText = t.title;
+      document.getElementById("txt-entry-subtitle").innerText = t.subtitle;
+      document.getElementById("lbl-firstname").innerText = t.firstname;
+      document.getElementById("lbl-surname").innerText = t.surname;
+      document.getElementById("input-firstname").placeholder = t.firstPlaceholder;
+      document.getElementById("input-surname").placeholder = t.surPlaceholder;
+      document.getElementById("btn-start").innerText = t.startBtn;
+      
+      document.getElementById("txt-quiz-title").innerText = t.title;
+      document.getElementById("txt-quiz-subtitle").innerText = t.quizSubtitle;
+      document.getElementById("btn-calc").innerText = t.btn;
+      
+      document.getElementById("txt-res-title").innerText = t.resTitle;
+      document.getElementById("txt-analysis-header").innerText = t.analysis;
+      document.getElementById("txt-rec-header").innerText = t.recruiterHeader;
+      document.getElementById("btn-copy").innerText = t.copyBtn;
+    }
+
+    function startTest(event) {
+      event.preventDefault();
+      const first = document.getElementById("input-firstname").value.trim();
+      const sur = document.getElementById("input-surname").value.trim();
+      
+      if (!first || !sur) {
+        alert("Please enter both First Name and Surname.");
+        return;
+      }
+      
+      candidateName = `${first} ${sur}`;
+      
+      document.getElementById("entry-section").style.display = "none";
+      document.getElementById("quiz-section").style.display = "block";
+      
+      selectActiveQuestions();
+      renderQuestions();
+    }
+
+    function getRandomSubarray(arr, size) {
+      let shuffled = arr.slice(0), i = arr.length, temp, index;
+      while (i--) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+      }
+      return shuffled.slice(0, size);
+    }
+
+    function selectActiveQuestions() {
+      const openQs = getRandomSubarray(valencePools.openness, 3).map(q => ({ ...q, valence: 'O' }));
+      const consQs = getRandomSubarray(valencePools.conscientiousness, 3).map(q => ({ ...q, valence: 'C' }));
+      const extQs = getRandomSubarray(valencePools.extraversion, 3).map(q => ({ ...q, valence: 'E' }));
+      const agrQs = getRandomSubarray(valencePools.agreeableness, 3).map(q => ({ ...q, valence: 'A' }));
+      const neuQs = getRandomSubarray(valencePools.neuroticism, 3).map(q => ({ ...q, valence: 'N' }));
+      
+      const rawSelection = [...openQs, ...consQs, ...extQs, ...agrQs, ...neuQs];
+      activeQuestions = getRandomSubarray(rawSelection, 15);
+      userAnswers = Array(15).fill(3);
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById("questions-container");
+      if (!container) return;
+      container.innerHTML = "";
+      
+      const t = translations[currentLang] || translations["en"];
+      
+      activeQuestions.forEach((q, index) => {
+        const qCard = document.createElement("div");
+        qCard.className = "question-card";
+        
+        const questionText = questionsTranslations[q.key][currentLang] || questionsTranslations[q.key]["en"];
+        
+        qCard.innerHTML = `
+            <div class="question-text">${questionText}</div>
+            <div class="options">
+                <button class="btn-option ${userAnswers[index] === 1 ? 'selected' : ''}" onclick="selectOption(${index}, 1)">${t.opt1}</button>
+                <button class="btn-option ${userAnswers[index] === 2 ? 'selected' : ''}" onclick="selectOption(${index}, 2)">${t.opt2}</button>
+                <button class="btn-option ${userAnswers[index] === 3 ? 'selected' : ''}" onclick="selectOption(${index}, 3)">${t.opt3}</button>
+                <button class="btn-option ${userAnswers[index] === 4 ? 'selected' : ''}" onclick="selectOption(${index}, 4)">${t.opt4}</button>
+                <button class="btn-option ${userAnswers[index] === 5 ? 'selected' : ''}" onclick="selectOption(${index}, 5)">${t.opt5}</button>
+            </div>`;
+        container.appendChild(qCard);
+      });
+    }
+
+    function selectOption(qIndex, val) { 
+      userAnswers[qIndex] = val; 
+      renderQuestions(); 
+    }
+
+    function calculateResult() {
+      document.getElementById("quiz-section").style.display = "none";
+      document.getElementById("result-section").style.display = "block";
+      
+      const mapScore = (val) => val * 20;
+      const mapInverse = (val) => 120 - (val * 20);
+      
+      let valenceTotals = { O: 0, C: 0, E: 0, A: 0, N: 0 };
+      
+      activeQuestions.forEach((q, index) => {
+        const val = userAnswers[index];
+        const score = q.type === "normal" ? mapScore(val) : mapInverse(val);
+        valenceTotals[q.valence] += score;
+      });
+      
+      const scoreO = valenceTotals.O / 3;
+      const scoreC = valenceTotals.C / 3;
+      const scoreE = valenceTotals.E / 3;
+      const scoreA = valenceTotals.A / 3;
+      const scoreN = valenceTotals.N / 3;
+      
+      const ctx = document.getElementById("radarChart").getContext("2d");
+      const t = translations[currentLang] || translations["en"];
+      
+      if (myChart) {
+        myChart.destroy();
+      }
+
+      myChart = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: t.labels,
+          datasets: [{
+            label: "Espectro FFM",
+            data: [scoreO, scoreC, scoreE, scoreA, scoreN],
+            backgroundColor: "rgba(99, 102, 241, 0.15)",
+            borderColor: "rgba(99, 102, 241, 1)",
+            borderWidth: 3,
+            pointBackgroundColor: "rgba(99, 102, 241, 1)",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1.5,
+            pointRadius: 4.5,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 35,
+              right: 35,
+              top: 25,
+              bottom: 25
+            }
+          },
+          scales: {
+            r: {
+              angleLines: { display: true, color: "#e2e8f0" },
+              grid: { color: "#e2e8f0" },
+              pointLabels: { 
+                font: { size: 12, weight: "bold", family: "Plus Jakarta Sans" }, 
+                color: "#1e293b",
+                padding: 12
+              },
+              suggestedMin: 0, 
+              suggestedMax: 100, 
+              ticks: { display: false }
+            }
+          },
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.raw.toFixed(1) + "%";
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      document.getElementById("txt-feedback-content").innerText = t.feedback;
+      
+      const dateStr = new Date().toLocaleDateString(currentLang, { year: 'numeric', month: 'long', day: 'numeric' });
+      const recDataStr = `Candidate: ${candidateName}
+Date: ${dateStr}
+
+Big Five Valence Scores:
+- Openness: ${scoreO.toFixed(1)}%
+- Conscientiousness: ${scoreC.toFixed(1)}%
+- Extraversion: ${scoreE.toFixed(1)}%
+- Agreeableness: ${scoreA.toFixed(1)}%
+- Neuroticism: ${scoreN.toFixed(1)}%`;
+
+      document.getElementById("txt-rec-data").innerText = recDataStr;
+    }
+
+    function copyRecruiterData(btn) {
+      const dataText = document.getElementById("txt-rec-data").innerText;
+      navigator.clipboard.writeText(dataText).then(() => {
+        const t = translations[currentLang] || translations["en"];
+        const originalText = btn.innerText;
+        btn.innerText = t.copySuccess || "Copied !";
+        btn.style.background = "#059669";
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.style.background = "#475569";
+        }, 2000);
+      }).catch(err => {
+        console.error("Copy failed:", err);
+      });
+    }
+
+    window.onload = function() {
+      document.getElementById("lang-select").value = "en";
+      changeLanguage();
+    };
+  </script>
+</body>
+</html>
